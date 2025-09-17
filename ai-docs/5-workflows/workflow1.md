@@ -1,60 +1,45 @@
 # Workflow 1: Complete Session Processing Pipeline
 
 ## Variables
-- `$SESSION_NUMBER` - The session number to process (e.g., 2 for session2.md)
+- `$SESSION_NUMBER` — session number to process (e.g., `2` maps to `session2.md`)
 
 ## Overview
-This workflow processes a brainstorming session through the complete document generation pipeline: specification creation, simplification review, and PRD generation.
+Process a brainstorming session through the full documentation pipeline: generate the initial specification, run a simplification review, and produce the companion PRD.
 
 ## Workflow Steps
 
 ### Step 1: Generate Technical Specification
-**Agent**: `brain2specs-agent`
-**Input**: `0-brainstorming/session$SESSION_NUMBER.md`
-**Output**: `2-specs/specs$SESSION_NUMBER.md`
-**Command**: `/brain2specs $SESSION_NUMBER`
+- **Role**: `brain2specs-agent`
+- **Inputs**: `0-brainstorming/session$SESSION_NUMBER.md`
+- **Playbook**: `ai-docs/6-tools/playbooks/brain2specs.md`
+- **Output**: `2-specs/specs$SESSION_NUMBER.md`
 
 ### Step 2: Review and Simplify Specification
-**Agent**: `spec-simplification-agent`
-**Input**:
-- `0-brainstorming/session$SESSION_NUMBER.md` (original)
-- `2-specs/specs$SESSION_NUMBER.md` (generated spec)
-**Output**: `2-specs/specs$SESSION_NUMBER-simplified.md`
+- **Role**: `spec-simplification-agent`
+- **Inputs**:
+  - `0-brainstorming/session$SESSION_NUMBER.md`
+  - `2-specs/specs$SESSION_NUMBER.md`
+- **Guidance**: `agents/spec-simplification-agent.md`
+- **Output**: `2-specs/specs$SESSION_NUMBER-simplified.md`
 
 ### Step 3: Generate Product Requirements Document
-**Agent**: `brain2prd-agent`
-**Input**: `0-brainstorming/session$SESSION_NUMBER.md`
-**Output**: `1-prds/prd$SESSION_NUMBER.md`
-**Command**: `/session2prd $SESSION_NUMBER`
+- **Role**: `brain2prd-agent`
+- **Inputs**: `0-brainstorming/session$SESSION_NUMBER.md`
+- **Playbook**: `ai-docs/6-tools/playbooks/session2prd.md`
+- **Output**: `1-prds/prd$SESSION_NUMBER.md`
 
-## Execution Sequence
-
-```yaml
-workflow_name: "complete-session-processing"
-session: $SESSION_NUMBER
-steps:
-  1. brain2specs_conversion:
-     - Run: /brain2specs $SESSION_NUMBER
-     - Creates: 2-specs/specs$SESSION_NUMBER.md
-
-  2. spec_simplification:
-     - Agent: spec-simplification-agent
-     - Compare: session$SESSION_NUMBER.md vs specs$SESSION_NUMBER.md
-     - Creates: 2-specs/specs$SESSION_NUMBER-simplified.md
-
-  3. prd_generation:
-     - Run: /session2prd $SESSION_NUMBER
-     - Creates: 1-prds/prd$SESSION_NUMBER.md
-```
+## Execution Checklist
+- Substitute `$SESSION_NUMBER` with the target value before sharing file paths with an assistant.
+- Run each step in order; pause between steps if human review is required.
+- Capture notes about decisions or deviations directly in the workflow file if helpful for future runs.
 
 ## Expected Outputs
-- `2-specs/specs$SESSION_NUMBER.md` - Initial technical specification
-- `2-specs/specs$SESSION_NUMBER-simplified.md` - Reviewed and simplified specification
-- `1-prds/prd$SESSION_NUMBER.md` - Product requirements document
+- `2-specs/specs$SESSION_NUMBER.md`
+- `2-specs/specs$SESSION_NUMBER-simplified.md`
+- `1-prds/prd$SESSION_NUMBER.md`
 
 ## Success Criteria
-- [ ] Technical specification generated from session $SESSION_NUMBER
-- [ ] Specification reviewed for scope creep and over-engineering
-- [ ] Simplified specification maintains original session intent
-- [ ] PRD captures business requirements from session $SESSION_NUMBER
-- [ ] All three documents are consistent and traceable to original session
+- [ ] Specification reflects the session content for `$SESSION_NUMBER`
+- [ ] Simplified specification aligns with original intent and flags removed scope
+- [ ] PRD captures business context and requirements from the same session
+- [ ] All artifacts reference the source session number for traceability

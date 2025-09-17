@@ -1,4 +1,4 @@
-# Unified Coding Standards Prompt (UCSP) for Claude Code
+# Unified Coding Standards Prompt (UCSP)
 
 ## Objective
 Ensure consistent, well-structured code architecture across all development projects, with clear separation between agents and tools.

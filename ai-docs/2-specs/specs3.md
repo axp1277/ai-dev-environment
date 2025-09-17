@@ -1,129 +1,106 @@
-# Multi-Timeframe Level Detector with License Management - Technical Specification
+# Multi-Timeframe Indicator Licensing Framework - Technical Specification
 
 ## Vision
-
-Build a Rust-based multi-timeframe level detector with license management that enables secure distribution of proprietary trading indicators. The system uses Rust for computational processing with Python for visualization and C# integration for NinjaTrader strategies.
+Deliver a Rust-centric indicator engine that performs multi-timeframe market analysis, enforces feature access through licensing, and exposes results to external consumers (Python, C#, NinjaTrader). The system must keep proprietary logic compiled, ensure only authorized users can invoke protected indicators, and remain easy to extend with new indicators and license tiers.
 
 ### Objectives
-- Implement multi-timeframe level detection algorithm in Rust
-- Create license management system with function-level access control
-- Enable cross-language integration through compiled DLL
-- Build CLI tool for license key management
-- Support local SQLite database
-- Maintain code reusability across Python, C#, and Rust
+- Centralize license validation for every protected indicator without duplicating logic.
+- Maintain Rust performance for OHLC processing while allowing other runtimes to visualize results.
+- Provide a minimal CLI for creating, revoking, and associating license keys with tiers or individual indicators.
+- Keep the codebase modular so indicators can live in separate modules yet consume shared utilities.
 
 ### Success Metrics
-- Compile Rust indicators into DLL format
-- Implement license verification with SQLite backend
-- Achieve Python integration with Plotly visualization
-- Demonstrate C# compatibility for NinjaTrader integration
-- Create functional CLI for license management
-- Validate licensing with individual function access controls
+- ✅ License checks gate 100% of protected indicator entry points.
+- ✅ CLI can create, list, associate, and revoke license keys without manual database edits.
+- ✅ Indicators accept standardized inputs (`Vec<Ohlc>`, index, optional params) and return deterministic outputs.
+- ✅ Python (or other host language) reads generated JSON/FFI data without modifying Rust internals.
 
 ## Tasks
 
-⏳ Task 1.0: Core Database Schema
-* ⏳ 1.1: Create SQLite database with three tables: functions, licenses, license_function_map
-* ⏳ 1.2: Define functions table (id PRIMARY KEY, name TEXT UNIQUE)
-* ⏳ 1.3: Define licenses table (id PRIMARY KEY, key TEXT UNIQUE, tier TEXT)
-* ⏳ 1.4: Define license_function_map table (license_id INTEGER, function_id INTEGER, FOREIGN KEYS)
+⏳ Task 1.0: Persistence Layer & Data Model
+* ⏳ 1.1: Define `Ohlc` struct and shared data model crate for indicator inputs.
+* ⏳ 1.2: Design SQLite schema (`functions`, `licenses`, `license_function_map`).
+* ⏳ 1.3: Implement persistence module for CRUD operations (Rusqlite abstraction).
+* ⏳ 1.4: Create database migration/initialization routine with seed data for tiers and sample keys.
 
-⏳ Task 2.0: License Checker Module
-* ⏳ 2.1: Create license_checker.rs module with rusqlite connectivity
-* ⏳ 2.2: Implement check_license function accepting function_name parameter
-* ⏳ 2.3: Support tier-based and individual function licensing
-* ⏳ 2.4: Basic error handling for invalid licenses
+⏳ Task 2.0: License Checking Module
+* ⏳ 2.1: Implement `LicenseChecker` struct with caching and database fallback.
+* ⏳ 2.2: Expose `check_license(function: &str) -> Result<(), LicenseError>` helper.
+* ⏳ 2.3: Load license key from configuration singleton (`lazy_static` or `OnceLock`).
+* ⏳ 2.4: Add ergonomic error types (invalid key, missing mapping, license revoked).
 
-⏳ Task 3.0: Global Configuration
-* ⏳ 3.1: Create config.rs module for license key storage
-* ⏳ 3.2: Implement global license key access using lazy_static
+⏳ Task 3.0: Indicator Framework
+* ⏳ 3.1: Build trait-based abstraction (`Indicator`) with default hooks.
+* ⏳ 3.2: Implement baseline indicators (bullish imbalance, order block) using simple license check pattern.
+* ⏳ 3.3: Create optional wrapper struct for advanced users needing decorator-style enforcement.
+* ⏳ 3.4: Provide module templates so future indicators register themselves with minimal boilerplate.
 
-⏳ Task 4.0: OHLC Data Structure
-* ⏳ 4.1: Define basic OHLC data structure (open, high, low, close)
-* ⏳ 4.2: Create JSON serialization for output
+⏳ Task 4.0: Cross-Language Integration
+* ⏳ 4.1: Prepare Rust library for FFI/export (`cdylib`) with C-friendly wrappers.
+* ⏳ 4.2: Generate JSON outputs the Python front end can consume (Plotly overlay).
+* ⏳ 4.3: Document NinjaTrader/C# interop strategy (P/Invoke, DLL loading).
+* ⏳ 4.4: Package Python helper to parse Rust output and render charts (stretch goal).
 
-⏳ Task 5.0: Indicator Functions
-* ⏳ 5.1: Define standard function signature (ohlc_data: &[Ohlc], index: usize) -> Result<bool, &str>
-* ⏳ 5.2: Implement bullish_imbalance indicator with license verification
-* ⏳ 5.3: Implement bearish_imbalance indicator with license verification
-* ⏳ 5.4: Create order_block indicators (bullish and bearish)
+⏳ Task 5.0: License Management CLI (`lk`)
+* ⏳ 5.1: Scaffold Rust binary with commands: `new`, `list`, `associate`, `revoke`, `delete-function`.
+* ⏳ 5.2: Support tier-based and function-specific associations.
+* ⏳ 5.3: Provide output in table/JSON format for automation.
+* ⏳ 5.4: Add secure key generation (UUID/random) and optional expiry metadata.
 
-⏳ Task 6.0: CLI License Management
-* ⏳ 6.1: Create separate Rust binary for CLI tool
-* ⏳ 6.2: Implement "lk new" command for generating license keys
-* ⏳ 6.3: Implement "lk add-function" command for registering functions
-* ⏳ 6.4: Implement "lk remove" command for removing licenses/functions
-* ⏳ 6.5: Implement "lk list" command for viewing mappings
-* ⏳ 6.6: Implement "lk associate" command for linking licenses to functions
+⏳ Task 6.0: Testing & Validation
+* ⏳ 6.1: Add unit tests for license checker (valid, invalid, revoked scenarios).
+* ⏳ 6.2: Write integration tests ensuring indicators refuse execution without proper key.
+* ⏳ 6.3: test CLI commands against temporary SQLite database.
+* ⏳ 6.4: Benchmark overhead of license checks to ensure negligible impact.
 
-⏳ Task 7.0: Multi-Language Integration
-* ⏳ 7.1: Configure Rust project for DLL compilation
-* ⏳ 7.2: Create Python bindings using PyO3
-* ⏳ 7.3: Implement C-compatible exports for C# P/Invoke
-* ⏳ 7.4: JSON-based data exchange format
-
-⏳ Task 8.0: Code Organization
-* ⏳ 8.1: Create indicators directory structure (indicators/imbalance.rs, indicators/order_block.rs)
-* ⏳ 8.2: Establish license_checker imports across modules
-
-⏳ Task 9.0: Python Visualization
-* ⏳ 9.1: Create Python module for reading JSON output
-* ⏳ 9.2: Implement Plotly candlestick chart rendering
-* ⏳ 9.3: Add indicator overlay functionality
+⏳ Task 7.0: Documentation & Distribution
+* ⏳ 7.1: Document indicator API, inputs, and outputs for integrators.
+* ⏳ 7.2: Provide developer guide for adding new indicators and license tiers.
+* ⏳ 7.3: Create operational handbook for CLI usage and database backup strategy.
+* ⏳ 7.4: Outline cloud migration plan (PostgreSQL schema + migration steps).
 
 ## Development Conventions
 
 ### Code Quality
-1. Follow Rust best practices using cargo fmt and clippy
-2. Use Result types for error handling
-3. Keep functions modular and short
-4. Use descriptive variable and function names
+1. Use type hints and Rust doc comments for all public structs/functions.
+2. Favor immutable data and explicit ownership semantics; clone only when necessary.
+3. Keep functions ≤ 80 lines and prefer splitting complex logic into helpers.
+4. Ensure error messages are precise and actionable for operators.
 
-### Dependencies
-- Rust: rusqlite for SQLite, clap for CLI, PyO3 for Python bindings
-- Python: plotly for charts, json for data exchange
-- Database: SQLite 3.x
+### Logging & Telemetry
+1. Apply structured logging (e.g., `tracing`) around license checks and indicator execution.
+2. Avoid logging full license keys; hash or truncate to protect secrets.
+3. Emit metrics hooks (success/failure counts) for future monitoring needs.
 
-### Environment Setup
-- Rust: Latest stable toolchain
-- Python: 3.8+ for visualization
-- SQLite: Local database file
+### Package & Build Management
+1. Organize workspace using Cargo workspaces (`core`, `cli`, `ffi` crates) when complexity grows.
+2. Use `cargo fmt` and `cargo clippy` as pre-commit checks.
+3. Pin Rust toolchain via `rust-toolchain.toml` for reproducibility.
 
-### CLI Tool Usage Examples
-```bash
-# Create new license
-lk new
+### Testing
+1. Target coverage on license checker and indicator wrappers >80%.
+2. Provide mock layers for database access to avoid hitting disk in unit tests.
+3. Include regression tests verifying previously revoked licenses remain blocked.
+4. Add cross-language smoke tests (Python harness invoking Rust library).
 
-# Add function
-lk add-function order_block
+### Environment & Distribution
+1. Store license database in application data directory; allow custom path via config.
+2. Compile release binaries with `strip` to reduce distribution size.
+3. Sign artifacts or ship checksums for clients to verify integrity.
+4. Keep configuration files (license key, DB location) outside the distributed binary when possible.
 
-# Associate license with function
-lk associate license_key order_block
+## System Overview
 
-# List all licenses and functions
-lk list
-
-# Remove license or function
-lk remove license_key
+```mermaid
+graph LR
+    A[Client App / CLI] -->|Invoke| B[License Checker]
+    B -->|Reads| C[SQLite DB]
+    B -->|Grants Access| D[Indicator Modules]
+    D -->|Return Data| E[Rust Core Results]
+    E -->|Expose via FFI| F[Python / C# Front Ends]
 ```
 
-### Indicator Function Template
-```rust
-use crate::license_checker::check_license;
-
-pub fn bullish_imbalance(ohlc_data: &[Ohlc], index: usize) -> Result<bool, &str> {
-    check_license("bullish_imbalance")?;
-
-    if index >= ohlc_data.len() || index < 1 {
-        return Err("Invalid index");
-    }
-
-    let current = &ohlc_data[index];
-    let previous = &ohlc_data[index - 1];
-
-    // Simple gap detection logic
-    Ok(current.low > previous.high)
-}
-```
-
-This specification captures the core requirements discussed in the brainstorming session: multi-timeframe level detector in Rust, license management with SQLite, CLI tool, Python visualization, and C# integration.
+## Notes
+- All new indicators must register their function name in the database seeding script or CLI before deployment.
+- License key storage should remain server-side; distribute only generated keys to clients.
+- Plan future enhancement for remote key verification (cloud API) while keeping local fallback intact.
