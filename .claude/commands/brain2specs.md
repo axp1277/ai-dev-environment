@@ -1,0 +1,1 @@
+Review the  brainstorming session brainstorm<session_number>.md and create a specs-<session_number>.md plan in the ai-docs/2-specs/ folder following the guidelines provided by the ai-docs/1-prompts/brain2specs.md. Session number is $ARGUMENTS
