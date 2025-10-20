@@ -50,6 +50,9 @@ class ValidationAgent:
         self.min_summary_length = config.min_summary_length
         self.require_all_public_methods = config.require_all_public_methods
 
+        # Create Ollama client with configurable base URL
+        self.client = ollama.Client(host=config.ollama_base_url)
+
         # Load validation prompts
         self.layer1_prompt = self._load_prompt(config.validation_layer1_prompt_path)
         self.layer2_prompt = self._load_prompt(config.validation_layer2_prompt_path)
@@ -59,7 +62,8 @@ class ValidationAgent:
             "ValidationAgent initialized",
             model=self.model_name,
             min_summary_length=self.min_summary_length,
-            require_all_methods=self.require_all_public_methods
+            require_all_methods=self.require_all_public_methods,
+            base_url=config.ollama_base_url
         )
 
     def _load_prompt(self, prompt_path: Path) -> str:
@@ -93,7 +97,7 @@ class ValidationAgent:
         try:
             logger.debug("Calling LLM validator", model=self.model_name)
 
-            response = ollama.chat(
+            response = self.client.chat(
                 model=self.model_name,
                 messages=[
                     {"role": "system", "content": prompt},

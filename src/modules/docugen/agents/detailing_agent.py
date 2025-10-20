@@ -38,10 +38,14 @@ class DetailingAgent:
         self.prompt_path = config.detailing_prompt_path
         self.system_prompt = self._load_prompt()
 
+        # Create Ollama client with configurable base URL
+        self.client = ollama.Client(host=config.ollama_base_url)
+
         logger.info(
             f"DetailingAgent initialized",
             model=self.model_name,
-            prompt=str(self.prompt_path)
+            prompt=str(self.prompt_path),
+            base_url=config.ollama_base_url
         )
 
     def _load_prompt(self) -> str:
@@ -75,7 +79,7 @@ class DetailingAgent:
             user_message = self._prepare_context(state)
 
             # Call Ollama with Pydantic structured output
-            response = ollama.chat(
+            response = self.client.chat(
                 model=self.model_name,
                 messages=[
                     {"role": "system", "content": self.system_prompt},

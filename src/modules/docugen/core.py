@@ -57,12 +57,14 @@ class ProcessingConfig(BaseModel):
     )
 
 
-class ParserConfig(BaseModel):
-    """Configuration for language-specific parsers."""
+class OllamaConfig(BaseModel):
+    """Configuration for Ollama/LLM connection."""
 
-    csharp: str = Field(default="csast", description="Parser for C# code (csast)")
-    java: Optional[str] = Field(default=None, description="Parser for Java code (future)")
-    python: Optional[str] = Field(default=None, description="Parser for Python code (future)")
+    base_url: str = Field(
+        default="http://localhost:11434",
+        description="Base URL for Ollama API or OpenAI-compatible endpoint"
+    )
+    timeout: int = Field(default=300, ge=1, description="Request timeout in seconds")
 
 
 class DocuGenConfig(BaseModel):
@@ -72,7 +74,7 @@ class DocuGenConfig(BaseModel):
     validation: ValidationConfig = Field(default_factory=ValidationConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     processing: ProcessingConfig = Field(default_factory=ProcessingConfig)
-    parsers: ParserConfig = Field(default_factory=ParserConfig)
+    ollama: OllamaConfig = Field(default_factory=OllamaConfig)
 
     @property
     def output_path(self) -> Path:

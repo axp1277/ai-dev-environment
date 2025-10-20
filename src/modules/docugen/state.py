@@ -106,6 +106,12 @@ class GraphConfig(BaseModel):
     relationship_model: str = Field(default="codellama:7b")
     validation_model: Optional[str] = Field(default=None, description="Model for validation (defaults to detailing_model)")
 
+    # Ollama/LLM connection
+    ollama_base_url: str = Field(
+        default="http://localhost:11434",
+        description="Base URL for Ollama API or OpenAI-compatible endpoint"
+    )
+
     # Prompt paths
     summarizer_prompt_path: Path = Field(default=Path("src/modules/docugen/prompts/file_summarizer.md"))
     detailing_prompt_path: Path = Field(default=Path("src/modules/docugen/prompts/detailing_agent.md"))

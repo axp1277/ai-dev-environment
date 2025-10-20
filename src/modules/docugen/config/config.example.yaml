@@ -1,144 +1,51 @@
-# DocuGen Configuration File
-# =========================
-# This file configures the multi-agent documentation generator.
-# Copy this file to your working directory and customize as needed:
-#   cp src/modules/docugen/config/config.example.yaml config.yaml
+# DocuGen Configuration
+# =====================
+# Copy to your working directory: cp src/modules/docugen/config/config.example.yaml config.yaml
 
-# LLM Model Configuration
+# Step 1: LLM Connection
+# ----------------------
+ollama:
+  # API endpoint for LLM inference
+  base_url: "http://localhost:11434"  # Local Ollama (default)
+  # base_url: "https://openrouter.ai/api/v1"     # OpenRouter
+  # base_url: "https://api.together.xyz/v1"      # Together AI
+  # base_url: "http://localhost:1234/v1"         # LM Studio
+
+  timeout: 300  # Request timeout (seconds)
+
+# Step 2: Model Selection
 # -----------------------
-# Configure which Ollama models to use for each documentation layer.
-# Smaller models (7b) are faster but less detailed.
-# Larger models (13b+) provide better quality but slower processing.
 models:
-  # Default model for general tasks
-  default: "codellama:13b"
+  default: "codellama:13b"              # General purpose
+  summarizer: "codellama:7b"            # Layer 1 - Fast, high-level summaries
+  detailing: "codellama:13b"            # Layer 2 - Detailed documentation (quality critical)
+  relationship_mapper: "codellama:7b"   # Layer 3 - Dependency analysis
+  validation: null                      # Validation model (defaults to detailing if null)
 
-  # Layer 1: File Summarization (high-level overview)
-  # Recommended: Smaller model for speed (this layer processes many files)
-  summarizer: "codellama:7b"
-
-  # Layer 2: Detailed Documentation (function/class docstrings)
-  # Recommended: Larger model for quality
-  detailing: "codellama:13b"
-
-  # Layer 3: Relationship Mapping (cross-file dependencies)
-  # Recommended: Smaller model (analysis is more structured)
-  relationship_mapper: "codellama:7b"
-
-# Validation Configuration
-# ------------------------
-# Control quality assurance and refinement behavior
+# Step 3: Quality Validation
+# ---------------------------
 validation:
-  # Maximum number of refinement iterations per layer before flagging for manual review
-  # Higher values allow more refinement but increase processing time
-  # Range: 1-10, Recommended: 3
-  max_iterations: 3
+  max_iterations: 3                     # Refinement attempts before manual review (1-10)
+  min_summary_length: 50                # Minimum summary length (characters)
+  require_all_public_methods: true      # Enforce complete method documentation
 
-  # Minimum length for file summaries (characters)
-  # Summaries shorter than this will fail validation
-  # Range: 10+, Recommended: 50-100
-  min_summary_length: 50
-
-  # Require documentation for all public methods
-  # If true, missing documentation for any public method fails validation
-  require_all_public_methods: true
-
-# Output Configuration
-# --------------------
-# Control where and how documentation is generated
+# Step 4: Output Settings
+# -----------------------
 output:
-  # Base directory for generated documentation
-  # Relative paths are relative to current working directory
-  base_path: "./docs_output"
+  base_path: "./docs_output"            # Documentation output directory
+  format: "markdown"                    # Output format
+  include_metadata: true                # Include generation timestamps and validation status
 
-  # Output format (currently only markdown is supported)
-  format: "markdown"
-
-  # Include metadata in generated files
-  # Metadata includes: generation timestamp, model used, validation status
-  include_metadata: true
-
-# Processing Configuration
-# ------------------------
-# Control how files are processed
+# Step 5: Processing Options
+# ---------------------------
 processing:
-  # Number of files to process in parallel
-  # Higher values = faster processing but more memory/CPU usage
-  # Range: 1-16, Recommended: 4-8 depending on hardware
-  parallel_files: 4
-
-  # Enable incremental documentation updates
-  # If true, only changed files are re-processed
-  # If false, all files are always re-processed
-  enable_incremental: true
-
-  # List of supported programming languages to process
-  # Currently supported: ["csharp"]
-  # Future: ["java", "python", "javascript", "typescript", "go", "rust"]
+  parallel_files: 4                     # Concurrent file processing (1-16, adjust for hardware)
+  enable_incremental: true              # Only re-process changed files (not yet implemented)
   supported_languages:
     - "csharp"
 
-# Parser Configuration
-# --------------------
-# Configure language-specific code parsers
-parsers:
-  # C# parser (required for C# codebases)
-  # Options: "csast" (CsAst Python package)
-  csharp: "csast"
-
-  # Java parser (future support)
-  java: null
-
-  # Python parser (future support)
-  python: null
-
-  # JavaScript/TypeScript parser (future support)
-  javascript: null
-
-  # Go parser (future support)
-  go: null
-
-  # Rust parser (future support)
-  rust: null
-
-# Advanced Configuration
-# ----------------------
-# Uncomment and modify these settings for advanced use cases
-
-# # Custom prompt paths (override default prompts)
-# prompts:
-#   file_summarizer: "./custom_prompts/summarizer.md"
-#   detailing_agent: "./custom_prompts/detailing.md"
-#   relationship_mapper: "./custom_prompts/relationships.md"
-
-# # Logging configuration
-# logging:
-#   level: "INFO"  # DEBUG, INFO, WARNING, ERROR
-#   file: "./docugen.log"
-#   format: "text"  # text, json
-
-# # Ollama connection settings
-# ollama:
-#   host: "localhost"
-#   port: 11434
-#   timeout: 300  # seconds
-
-# # Performance tuning
-# performance:
-#   max_file_size_mb: 10  # Skip files larger than this
-#   token_limit: 4096     # Max tokens per LLM call
-#   cache_parsing_results: true
-#   cache_ttl_hours: 24
-
-# # Quality thresholds
-# quality:
-#   min_validation_pass_rate: 0.85  # 85% first-pass success
-#   max_manual_review_rate: 0.05    # <5% requiring manual review
-
 # Notes:
-# ------
-# 1. All paths can be absolute or relative to current working directory
-# 2. Model names must match models available in Ollama (run: ollama list)
-# 3. Memory usage scales with parallel_files and model size
-# 4. For large codebases (5000+ files), consider reducing parallel_files
-# 5. Enable verbose logging during initial setup: docugen document -v
+# - Model names must exist in Ollama: ollama list
+# - Memory usage scales with parallel_files and model size
+# - For large codebases (5000+ files), reduce parallel_files to 2-4
+# - Use verbose mode for debugging: docugen document -v

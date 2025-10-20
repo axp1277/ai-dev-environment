@@ -40,7 +40,14 @@ class DocumentationAgent:
         self.model = config.detailing_model  # Use detailing model for quality
         self.prompt_path = Path("src/modules/docugen/prompts/documentation_agent.md")
 
-        logger.info("DocumentationAgent initialized", model=self.model)
+        # Create Ollama client with configurable base URL
+        self.client = ollama.Client(host=config.ollama_base_url)
+
+        logger.info(
+            "DocumentationAgent initialized",
+            model=self.model,
+            base_url=config.ollama_base_url
+        )
 
     def invoke(
         self,
@@ -89,7 +96,7 @@ class DocumentationAgent:
 
             # Invoke LLM
             logger.info("Calling LLM to generate documentation")
-            response = ollama.chat(
+            response = self.client.chat(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},

@@ -159,6 +159,7 @@ def document(
             detailing_model=doc_config.models.detailing,
             relationship_model=doc_config.models.relationship_mapper,
             validation_model=doc_config.models.validation,
+            ollama_base_url=doc_config.ollama.base_url,
             summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
             detailing_prompt_path=Path("src/modules/docugen/prompts/detailing_agent.md"),
             relationship_prompt_path=Path("src/modules/docugen/prompts/relationship_mapper.md"),
@@ -463,6 +464,7 @@ def test_layer1(input: str, config: Optional[str], output: Optional[str], limit:
             doc_config = DocuGenConfig.from_yaml(config_path)
             graph_config = GraphConfig(
                 summarizer_model=doc_config.models.summarizer,
+                ollama_base_url=doc_config.ollama.base_url,
                 summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
             )
         else:
@@ -650,6 +652,7 @@ def test_layer2(input: str, config: Optional[str], output: Optional[str], limit:
             graph_config = GraphConfig(
                 summarizer_model=doc_config.models.summarizer,
                 detailing_model=doc_config.models.detailing,
+                ollama_base_url=doc_config.ollama.base_url,
                 summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
                 detailing_prompt_path=Path("src/modules/docugen/prompts/detailing_agent.md"),
             )
@@ -876,6 +879,7 @@ def test_layer3(input: str, config: Optional[str], output: Optional[str], limit:
                 summarizer_model=doc_config.models.summarizer,
                 detailing_model=doc_config.models.detailing,
                 relationship_model=doc_config.models.relationship_mapper,
+                ollama_base_url=doc_config.ollama.base_url,
                 summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
                 detailing_prompt_path=Path("src/modules/docugen/prompts/detailing_agent.md"),
                 relationship_prompt_path=Path("src/modules/docugen/prompts/relationship_mapper.md"),

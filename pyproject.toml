@@ -1,6 +1,6 @@
 [project]
 name = "ai-dev-environment"
-version = "0.2.0"
+version = "0.3.0"
 description = "AI-powered development environment with multi-agent code documentation generator"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -23,6 +23,13 @@ dependencies = [
 
 [project.scripts]
 docugen = "src.modules.docugen.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
 
 [dependency-groups]
 dev = [
