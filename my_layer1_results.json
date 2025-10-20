@@ -1,0 +1,48 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "summary": "This file implements a worker pool system that manages concurrent execution of tasks, allowing multiple workers to process tasks from a queue. It provides methods for enqueuing tasks and stopping the pool.",
+    "purpose": "Manages concurrent task execution across multiple workers",
+    "category": "Service Layer",
+    "key_classes": [
+      "WorkerPool",
+      "IWorkerPool"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "summary": "This service handles HTTP requests for retrieving and posting data, providing async methods for interacting with external APIs.",
+    "purpose": "Business logic for handling HTTP requests and data interaction",
+    "category": "Service Layer",
+    "key_classes": [
+      "HttpService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/FlattenAllService.cs",
+    "summary": "This service processes directories to flatten code structures, executing the code flattener tool and logging progress and results.",
+    "purpose": "Business logic for code flattening operations",
+    "category": "Service Layer",
+    "key_classes": [
+      "FlattenAllService",
+      "IRenderer",
+      "InputProcessor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OllamaService.cs",
+    "summary": "This service handles API requests to the Ollama API, providing methods for retrieving data from the local server. It serves as the bridge between the application and the Ollama service.",
+    "purpose": "Business logic for interacting with the Ollama API",
+    "category": "Service Layer",
+    "key_classes": [
+      "OllamaService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+    "summary": "This file provides a local database service with connection management, database initialization, and connection testing capabilities. It handles database operations for the application using either Sqlite or Npgsql based on the environment.",
+    "purpose": "Database initialization and connection management for the application",
+    "category": "Service Layer",
+    "key_classes": []
+  }
+]

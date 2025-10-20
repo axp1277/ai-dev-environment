@@ -1,0 +1,72 @@
+---
+title: C# Documentation System - Documentation Generation Workflow
+session: 6
+created: 2025-10-17
+description: End-to-end workflow showing how the multi-agent system processes C# files through three documentation layers with validation and refinement loops
+---
+
+```mermaid
+graph TD
+    Start((User Starts<br/>Documentation)) --> Config[Load Configuration<br/>Models, Paths, Rules]
+    Config --> InputDir[Specify C# Codebase<br/>Directory]
+
+    InputDir --> Parse{Processing Mode}
+    Parse -->|Full Run| SelectAllFiles[Select All C# Files<br/>From Directory]
+    Parse -->|Incremental| DetectChanges[Detect Changed Files<br/>Since Last Run]
+
+    DetectChanges --> SelectFile
+    SelectAllFiles --> SelectFile[Select Next File]
+
+    SelectFile --> Layer1[Layer 1: Summarizer Agent<br/>Infer Structure & Generate Summary]
+
+    Layer1 --> Validate1{Validation<br/>Layer 1}
+    Validate1 -->|Pass| Layer2[Layer 2: Detailing Agent<br/>Generate Docstrings]
+    Validate1 -->|Fail| CheckIter1{Iterations<br/>< 3?}
+
+    CheckIter1 -->|Yes| Refine1[Inject Validation<br/>Feedback]
+    Refine1 --> Layer1
+    CheckIter1 -->|No| FlagManual1[Flag for<br/>Manual Review]
+    FlagManual1 --> NextFile
+
+    Layer2 --> Validate2{Validation<br/>Layer 2}
+    Validate2 -->|Pass| Layer3[Layer 3: Relationship Mapper<br/>Infer Dependencies & Relationships]
+    Validate2 -->|Fail| CheckIter2{Iterations<br/>< 3?}
+
+    CheckIter2 -->|Yes| Refine2[Inject Validation<br/>Feedback]
+    Refine2 --> Layer2
+    CheckIter2 -->|No| FlagManual2[Flag for<br/>Manual Review]
+    FlagManual2 --> NextFile
+
+    Layer3 --> Validate3{Validation<br/>Layer 3}
+    Validate3 -->|Pass| GenerateDoc[Generate Markdown<br/>Documentation]
+    Validate3 -->|Fail| CheckIter3{Iterations<br/>< 3?}
+
+    CheckIter3 -->|Yes| Refine3[Inject Validation<br/>Feedback]
+    Refine3 --> Layer3
+    CheckIter3 -->|No| FlagManual3[Flag for<br/>Manual Review]
+    FlagManual3 --> NextFile
+
+    GenerateDoc --> SaveDoc[Save Documentation<br/>File]
+    SaveDoc --> UpdateMetrics[Update Metrics<br/>Coverage, Quality]
+    UpdateMetrics --> NextFile{More<br/>Files?}
+
+    NextFile -->|Yes| SelectFile
+    NextFile -->|No| GenerateIndex[Generate Index<br/>& Navigation]
+
+    GenerateIndex --> GenerateReport[Generate Metrics<br/>Report]
+    GenerateReport --> DisplaySummary[Display Summary<br/>Files, Pass Rate, Time]
+    DisplaySummary --> End((Complete))
+
+    %% Styling
+    classDef userAction fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    classDef agentProcess fill:#ffe1e1,stroke:#cc0000,stroke-width:2px
+    classDef validation fill:#fff4e1,stroke:#cc6600,stroke-width:2px
+    classDef systemProcess fill:#e1ffe1,stroke:#00cc00,stroke-width:2px
+    classDef decision fill:#f5e1ff,stroke:#6600cc,stroke-width:2px
+
+    class Config,InputDir,DisplaySummary userAction
+    class Layer1,Layer2,Layer3,Refine1,Refine2,Refine3 agentProcess
+    class Validate1,Validate2,Validate3 validation
+    class SelectAllFiles,DetectChanges,GenerateDoc,SaveDoc,UpdateMetrics,GenerateIndex,GenerateReport systemProcess
+    class Parse,CheckIter1,CheckIter2,CheckIter3,NextFile decision
+```

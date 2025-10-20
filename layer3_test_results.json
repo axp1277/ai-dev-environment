@@ -1,0 +1,48 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/BlockingCollection.cs",
+        "classes_used": [],
+        "purpose": "Provides a thread-safe collection for managing tasks",
+        "relationship_type": "Composition"
+      },
+      {
+        "file": "System.Threading.dll",
+        "classes_used": [],
+        "purpose": "Provides thread-safe async/await mechanisms",
+        "relationship_type": "Dependency Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+        "how_used": "Invoked to process order creation, updates, and queries"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OrderController.cs",
+        "how_used": "Invoked to process order creation, updates, and queries"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClientService.cs",
+        "classes_used": [],
+        "purpose": "Provides HTTP client services for the application",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+        "how_used": "Invoked to handle HTTP requests and data interaction"
+      }
+    ]
+  }
+]

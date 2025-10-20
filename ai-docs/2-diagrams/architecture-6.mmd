@@ -1,0 +1,158 @@
+---
+title: C# Documentation System - Technical Architecture
+session: 6
+created: 2025-10-17
+description: Multi-agent system architecture showing parsing layer, LangGraph orchestration, agent pipeline, and local LLM integration
+---
+
+```mermaid
+graph TD
+    subgraph "User Interface Layer"
+        CLI[CLI Application<br/>Click/Typer]
+        Config[Configuration Manager<br/>YAML/TOML]
+        Progress[Progress Monitor<br/>Rich Library]
+    end
+
+    subgraph "Input Processing Layer"
+        FileScanner[File Scanner<br/>Directory Walker]
+        Parser[AST Parser<br/>CsAst Python Package]
+        HierarchyExtractor[Hierarchy Extractor<br/>Class/Method Tree]
+        DependencyAnalyzer[Dependency Analyzer<br/>Cross-File References]
+    end
+
+    subgraph "LangGraph Orchestration"
+        StateMachine[State Machine Controller<br/>LangGraph]
+        StateManager[State Manager<br/>Pydantic Models]
+        IterationTracker[Iteration Tracker<br/>Refinement Loops]
+    end
+
+    subgraph "Agent Pipeline - Layer 1"
+        Agent1[FileSummarizerAgent]
+        Prompt1[System Prompt<br/>External File]
+        Validator1[ValidationAgent L1<br/>Pydantic Schema]
+    end
+
+    subgraph "Agent Pipeline - Layer 2"
+        Agent2[DetailingAgent]
+        Prompt2[System Prompt<br/>External File]
+        Validator2[ValidationAgent L2<br/>Pydantic Schema]
+    end
+
+    subgraph "Agent Pipeline - Layer 3"
+        Agent3[RelationshipMapperAgent]
+        Prompt3[System Prompt<br/>External File]
+        Validator3[ValidationAgent L3<br/>Pydantic Schema]
+    end
+
+    subgraph "LLM Execution Layer"
+        Ollama[Ollama Runtime<br/>Local Execution]
+        Model1[codellama:7b<br/>Summarizer Model]
+        Model2[codellama:13b<br/>Detailing Model]
+    end
+
+    subgraph "Output Layer"
+        MarkdownGen[Markdown Generator<br/>Template Engine]
+        FileWriter[File Writer<br/>Atomic Operations]
+        IndexGen[Index Generator<br/>Navigation Links]
+        MetricsCollector[Metrics Collector<br/>Coverage & Quality]
+    end
+
+    subgraph "Storage"
+        InputFiles[(C# Source Files)]
+        OutputDocs[(Generated Markdown)]
+        MetadataStore[(Metadata JSON<br/>Last Run Info)]
+        LogFiles[(Application Logs<br/>Structured Logging)]
+    end
+
+    %% User Interface Flow
+    CLI --> Config
+    CLI --> Progress
+    CLI --> FileScanner
+
+    %% Input Processing Flow
+    FileScanner --> InputFiles
+    InputFiles --> Parser
+    Parser --> HierarchyExtractor
+    HierarchyExtractor --> DependencyAnalyzer
+
+    %% Orchestration Flow
+    DependencyAnalyzer --> StateMachine
+    Config --> StateMachine
+    StateMachine --> StateManager
+    StateManager --> IterationTracker
+
+    %% Layer 1 Flow
+    StateMachine --> Agent1
+    Prompt1 -.-> Agent1
+    Agent1 --> Ollama
+    Ollama --> Model1
+    Model1 --> Agent1
+    Agent1 --> Validator1
+    Validator1 -->|Pass| StateMachine
+    Validator1 -->|Fail| IterationTracker
+    IterationTracker -->|Retry| Agent1
+
+    %% Layer 2 Flow
+    StateMachine --> Agent2
+    Prompt2 -.-> Agent2
+    Agent2 --> Ollama
+    Ollama --> Model2
+    Model2 --> Agent2
+    Agent2 --> Validator2
+    Validator2 -->|Pass| StateMachine
+    Validator2 -->|Fail| IterationTracker
+    IterationTracker -->|Retry| Agent2
+
+    %% Layer 3 Flow
+    StateMachine --> Agent3
+    Prompt3 -.-> Agent3
+    Agent3 --> Ollama
+    Ollama --> Model1
+    Model1 --> Agent3
+    Agent3 --> Validator3
+    Validator3 -->|Pass| StateMachine
+    Validator3 -->|Fail| IterationTracker
+    IterationTracker -->|Retry| Agent3
+
+    %% Output Flow
+    StateMachine --> MarkdownGen
+    MarkdownGen --> FileWriter
+    FileWriter --> OutputDocs
+    FileWriter --> IndexGen
+    IndexGen --> OutputDocs
+
+    %% Metrics & Monitoring
+    StateMachine --> MetricsCollector
+    Validator1 -.-> MetricsCollector
+    Validator2 -.-> MetricsCollector
+    Validator3 -.-> MetricsCollector
+    MetricsCollector --> MetadataStore
+
+    %% Logging
+    StateMachine -.-> LogFiles
+    Agent1 -.-> LogFiles
+    Agent2 -.-> LogFiles
+    Agent3 -.-> LogFiles
+    Parser -.-> LogFiles
+
+    %% Progress Reporting
+    StateMachine --> Progress
+    MetricsCollector --> Progress
+
+    %% Styling
+    classDef uiLayer fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    classDef inputLayer fill:#ffe1e1,stroke:#cc0000,stroke-width:2px
+    classDef orchestration fill:#fff4e1,stroke:#cc6600,stroke-width:2px
+    classDef agent fill:#f5e1ff,stroke:#6600cc,stroke-width:2px
+    classDef llm fill:#ffe1ff,stroke:#cc00cc,stroke-width:3px
+    classDef output fill:#e1ffe1,stroke:#00cc00,stroke-width:2px
+    classDef storage fill:#f0f0f0,stroke:#666666,stroke-width:2px
+
+    class CLI,Config,Progress uiLayer
+    class FileScanner,Parser,HierarchyExtractor,DependencyAnalyzer inputLayer
+    class StateMachine,StateManager,IterationTracker orchestration
+    class Agent1,Agent2,Agent3,Prompt1,Prompt2,Prompt3,Validator1,Validator2,Validator3 agent
+    class Ollama,Model1,Model2 llm
+    class MarkdownGen,FileWriter,IndexGen,MetricsCollector output
+    class InputFiles,OutputDocs,MetadataStore,LogFiles storage
+```

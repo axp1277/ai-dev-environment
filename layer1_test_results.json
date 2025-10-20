@@ -1,0 +1,29 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "summary": "This file implements a worker pool management system that processes tasks asynchronously using a blocking collection and cancellation support. It provides methods for enqueuing tasks and stopping the pool.",
+    "purpose": "Manages and processes tasks asynchronously across multiple worker threads",
+    "category": "Service Layer",
+    "key_classes": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "summary": "This service handles HTTP requests for data retrieval and submission, providing asynchronous methods for GET and POST operations. It serves as the interface for external APIs and data sources.",
+    "purpose": "Primary responsibility of the HttpService class in the codebase",
+    "category": "Service Layer",
+    "key_classes": [
+      "HttpService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/FlattenAllService.cs",
+    "summary": "This service processes directories to flatten code structures, executing the code flattener tool and logging progress and results.",
+    "purpose": "Business logic for code flattening operations",
+    "category": "Service Layer",
+    "key_classes": [
+      "FlattenAllService",
+      "IRenderer",
+      "IInputProcessor"
+    ]
+  }
+]

@@ -1,0 +1,70 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "classes": [
+      {
+        "name": "WorkerPool",
+        "description": "Manages background task execution across multiple workers by providing a thread-safe queue for enqueuing tasks and starting worker threads that process these tasks concurrently.",
+        "methods": [
+          {
+            "name": "WorkerPool",
+            "signature": "public WorkerPool(int workerCount)",
+            "description": "Initializes the worker pool with the specified number of worker threads. Each thread continuously consumes tasks from the internal queue and executes them.",
+            "parameters": [
+              "workerCount: The desired number of worker threads to create"
+            ],
+            "returns": null
+          },
+          {
+            "name": "EnqueueTask",
+            "signature": "public void EnqueueTask(Func<Task> task)",
+            "description": "Adds a task to the internal task queue for processing by the available worker threads.",
+            "parameters": [
+              "task: The task to be executed in the background, represented as a Func<Task>"
+            ],
+            "returns": null
+          },
+          {
+            "name": "Stop",
+            "signature": "public void Stop()",
+            "description": "Initiates the graceful shutdown of the worker pool by canceling the cancellation token source and completing further additions to the task queue.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "classes": [
+      {
+        "name": "HttpService",
+        "description": "A service responsible for handling asynchronous HTTP requests, including GET and POST operations, for interacting with external APIs.",
+        "methods": [
+          {
+            "name": "GetAsync",
+            "signature": "public async Task<string> GetAsync(string url)",
+            "description": "Initiates an asynchronous HTTP GET request to the specified URL and returns the response content as a string.",
+            "parameters": [
+              "url: The complete URL for the GET request"
+            ],
+            "returns": "The response body from the GET request as a string, or null if there's an error"
+          },
+          {
+            "name": "PostAsync",
+            "signature": "public async Task<string> PostAsync(string url, HttpContent content)",
+            "description": "Initiates an asynchronous HTTP POST request to the specified URL with provided content and returns the response body as a string.",
+            "parameters": [
+              "url: The complete URL for the POST request",
+              "content: The HTTP content to send in the request body"
+            ],
+            "returns": "The response body from the POST request as a string, or null if there's an error"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  }
+]
