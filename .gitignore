@@ -60,7 +60,6 @@ dmypy.json
 docs_output/
 *.log
 .docgen/
-config.yaml
 *.bak
 
 # Temporary files

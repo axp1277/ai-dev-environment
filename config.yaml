@@ -1,0 +1,51 @@
+# DocuGen Configuration
+# =====================
+# Copy to your working directory: cp src/modules/docugen/config/config.example.yaml config.yaml
+
+# Step 1: LLM Connection
+# ----------------------
+ollama:
+  # API endpoint for LLM inference
+  base_url: "http://localhost:11434"  # Local Ollama (default)
+  # base_url: "https://openrouter.ai/api/v1"     # OpenRouter
+  # base_url: "https://api.together.xyz/v1"      # Together AI
+  # base_url: "http://localhost:1234/v1"         # LM Studio
+
+  timeout: 300  # Request timeout (seconds)
+
+# Step 2: Model Selection
+# -----------------------
+models:
+  default: "mistral-nemo:latest"        # General purpose
+  summarizer: "qwen3:1.7b"              # Layer 1 - Fast, high-level summaries
+  detailing: "granite3.3:latest"        # Layer 2 - Detailed documentation (quality critical)
+  relationship_mapper: "qwen3:1.7b"     # Layer 3 - Dependency analysis
+  validation: "granite3.3:latest"       # Validation model (defaults to detailing if null)
+
+# Step 3: Quality Validation
+# ---------------------------
+validation:
+  max_iterations: 3                     # Refinement attempts before manual review (1-10)
+  min_summary_length: 50                # Minimum summary length (characters)
+  require_all_public_methods: true      # Enforce complete method documentation
+
+# Step 4: Output Settings
+# -----------------------
+output:
+  base_path: "./docs_output"            # Documentation output directory
+  format: "markdown"                    # Output format
+  include_metadata: true                # Include generation timestamps and validation status
+
+# Step 5: Processing Options
+# ---------------------------
+processing:
+  parallel_files: 4                     # Concurrent file processing (1-16, adjust for hardware)
+  enable_incremental: true              # Only re-process changed files (not yet implemented)
+  supported_languages:
+    - "csharp"
+
+# Notes:
+# - Model names must exist in Ollama: ollama list
+# - Memory usage scales with parallel_files and model size
+# - For large codebases (5000+ files), reduce parallel_files to 2-4
+# - Use verbose mode for debugging: docugen document -v
