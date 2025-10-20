@@ -11,13 +11,11 @@ Four Pillars:
 4. Tools: None (LLM infers relationships from code)
 """
 
-import json
 from pathlib import Path
-from typing import Dict, Any
-import ollama
 from loguru import logger
 
 from ..state import FileState, RelationshipMap, GraphConfig
+from ..core import create_chat_model
 
 
 class RelationshipMapperAgent:
@@ -38,14 +36,22 @@ class RelationshipMapperAgent:
         self.prompt_path = config.relationship_prompt_path
         self.system_prompt = self._load_prompt()
 
-        # Create Ollama client with configurable base URL
-        self.client = ollama.Client(host=config.ollama_base_url)
+        # Create LangChain chat model with structured output support
+        base_model = create_chat_model(
+            config.llm_base_url,
+            self.model_name,
+            config.llm_api_key_env,
+            config.llm_timeout
+        )
+
+        # Configure model to output structured RelationshipMap
+        self.model = base_model.with_structured_output(RelationshipMap)
 
         logger.info(
             f"RelationshipMapperAgent initialized",
             model=self.model_name,
             prompt=str(self.prompt_path),
-            base_url=config.ollama_base_url
+            base_url=config.llm_base_url
         )
 
     def _load_prompt(self) -> str:
@@ -78,18 +84,13 @@ class RelationshipMapperAgent:
             # Prepare context for LLM
             user_message = self._prepare_context(state)
 
-            # Call Ollama with Pydantic structured output
-            response = self.client.chat(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": user_message}
-                ],
-                format=RelationshipMap.model_json_schema()  # Pydantic structured output
-            )
+            # Call LangChain model with structured output (returns RelationshipMap directly)
+            from langchain_core.messages import SystemMessage, HumanMessage
 
-            # Parse response
-            relationships = self._parse_response(response)
+            relationships = self.model.invoke([
+                SystemMessage(content=self.system_prompt),
+                HumanMessage(content=user_message)
+            ])
 
             # Update state
             state.layer3_relationships = relationships
@@ -159,39 +160,6 @@ Identify:
 Respond with valid JSON matching the required schema.
 """
 
-    def _parse_response(self, response: Dict[str, Any]) -> RelationshipMap:
-        """
-        Parse LLM response into structured RelationshipMap.
-
-        With Pydantic structured output, Ollama returns valid JSON matching the schema.
-
-        Args:
-            response: Ollama chat response
-
-        Returns:
-            Validated RelationshipMap object
-        """
-        try:
-            # Extract content from response (already JSON due to format parameter)
-            content = response['message']['content']
-
-            # Parse JSON directly (Ollama structured output guarantees valid JSON)
-            data = json.loads(content)
-
-            # Validate and create RelationshipMap (Pydantic validation)
-            relationships = RelationshipMap(**data)
-
-            logger.debug("Successfully parsed structured output into RelationshipMap")
-            return relationships
-
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON from LLM response: {e}")
-            logger.debug(f"Raw response: {content}")
-            raise ValueError(f"Invalid JSON from LLM: {e}")
-
-        except Exception as e:
-            logger.error(f"Error parsing response: {e}")
-            raise
 
 
 # Node function for LangGraph

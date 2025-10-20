@@ -1,15 +1,20 @@
 # DocuGen Configuration
 # =====================
-# Copy to your working directory: cp src/modules/docugen/config/config.example.yaml config.yaml
+# DocuGen uses LangChain for universal LLM provider support.
+# Supports: Ollama (local), OpenRouter, Together AI, OpenAI, and any OpenAI-compatible API.
 
 # Step 1: LLM Connection
 # ----------------------
-ollama:
-  # API endpoint for LLM inference
-  base_url: "http://localhost:11434"  # Local Ollama (default)
+llm:
+  # API endpoint for LLM inference (OpenAI-compatible format with /v1)
+  base_url: "http://localhost:11434/v1"  # Local Ollama (default)
   # base_url: "https://openrouter.ai/api/v1"     # OpenRouter
   # base_url: "https://api.together.xyz/v1"      # Together AI
+  # base_url: "https://api.openai.com/v1"        # OpenAI
   # base_url: "http://localhost:1234/v1"         # LM Studio
+
+  # API key environment variable (leave null for local Ollama)
+  api_key_env: null  # e.g., "OPENROUTER_API_KEY", "OPENAI_API_KEY"
 
   timeout: 300  # Request timeout (seconds)
 
@@ -45,7 +50,10 @@ processing:
     - "csharp"
 
 # Notes:
-# - Model names must exist in Ollama: ollama list
+# - For local Ollama: Model names must exist (check with: ollama list)
+# - For OpenRouter/OpenAI: Use provider/model format (e.g., "anthropic/claude-3-5-sonnet")
+# - API keys should be stored in .env file and referenced via api_key_env
 # - Memory usage scales with parallel_files and model size
 # - For large codebases (5000+ files), reduce parallel_files to 2-4
 # - Use verbose mode for debugging: docugen document -v
+# - Test connection: docugen test-connection

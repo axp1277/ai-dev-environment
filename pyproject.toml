@@ -1,6 +1,6 @@
 [project]
 name = "ai-dev-environment"
-version = "0.3.2"
+version = "0.4.0"
 description = "AI-powered development environment with multi-agent code documentation generator"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -9,7 +9,9 @@ dependencies = [
     "langgraph>=0.2.0",        # Multi-agent orchestration
     "pydantic>=2.0.0",          # Data validation
     "pyyaml>=6.0.0",            # YAML configuration
-    "ollama>=0.1.0",            # Local LLM integration
+    "langchain>=0.3.0",         # LangChain core
+    "langchain-openai>=0.2.0",  # OpenAI and OpenAI-compatible models (Ollama, OpenRouter, Together AI)
+    "python-dotenv>=1.0.0",    # Environment variable management
 
     # CLI and UI
     "click>=8.1.0",             # CLI framework

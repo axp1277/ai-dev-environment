@@ -8,11 +8,11 @@ comprehensive markdown documentation for the entire codebase.
 import json
 from pathlib import Path
 from typing import Optional
-import ollama
 from pydantic import BaseModel, Field
 from loguru import logger
 
 from ..state import GraphConfig
+from ..core import create_chat_model
 
 
 class DocumentationOutput(BaseModel):
@@ -37,16 +37,21 @@ class DocumentationAgent:
             config: Graph configuration with model and prompt settings
         """
         self.config = config
-        self.model = config.detailing_model  # Use detailing model for quality
+        self.model_name = config.detailing_model  # Use detailing model for quality
         self.prompt_path = Path("src/modules/docugen/prompts/documentation_agent.md")
 
-        # Create Ollama client with configurable base URL
-        self.client = ollama.Client(host=config.ollama_base_url)
+        # Create LangChain chat model
+        self.model = create_chat_model(
+            config.llm_base_url,
+            self.model_name,
+            config.llm_api_key_env,
+            config.llm_timeout
+        )
 
         logger.info(
             "DocumentationAgent initialized",
-            model=self.model,
-            base_url=config.ollama_base_url
+            model=self.model_name,
+            base_url=config.llm_base_url
         )
 
     def invoke(
@@ -96,15 +101,14 @@ class DocumentationAgent:
 
             # Invoke LLM
             logger.info("Calling LLM to generate documentation")
-            response = self.client.chat(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": context}
-                ]
-            )
+            from langchain_core.messages import SystemMessage, HumanMessage
 
-            markdown_content = response['message']['content']
+            response = self.model.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=context)
+            ])
+
+            markdown_content = response.content
 
             # Write to output file
             output_path = Path(output_path)

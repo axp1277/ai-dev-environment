@@ -106,10 +106,19 @@ class GraphConfig(BaseModel):
     relationship_model: str = Field(default="codellama:7b")
     validation_model: Optional[str] = Field(default=None, description="Model for validation (defaults to detailing_model)")
 
-    # Ollama/LLM connection
-    ollama_base_url: str = Field(
-        default="http://localhost:11434",
-        description="Base URL for Ollama API or OpenAI-compatible endpoint"
+    # LLM connection (OpenAI-compatible endpoint)
+    llm_base_url: str = Field(
+        default="http://localhost:11434/v1",
+        description="Base URL for OpenAI-compatible API endpoint (Ollama, OpenRouter, Together AI, OpenAI, etc.)"
+    )
+    llm_api_key_env: Optional[str] = Field(
+        default=None,
+        description="Environment variable name for API key (e.g., 'OPENAI_API_KEY', 'OPENROUTER_API_KEY'). Leave None for local Ollama."
+    )
+    llm_timeout: int = Field(
+        default=300,
+        ge=1,
+        description="Request timeout in seconds"
     )
 
     # Prompt paths

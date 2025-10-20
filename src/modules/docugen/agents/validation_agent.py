@@ -14,10 +14,8 @@ Four Pillars:
 4. Tools: Pydantic validation, Ollama structured output
 """
 
-import json
 from typing import Optional
 from pathlib import Path
-import ollama
 from loguru import logger
 
 from ..state import (
@@ -28,6 +26,7 @@ from ..state import (
     RelationshipMap,
     GraphConfig
 )
+from ..core import create_chat_model
 
 
 class ValidationAgent:
@@ -50,8 +49,16 @@ class ValidationAgent:
         self.min_summary_length = config.min_summary_length
         self.require_all_public_methods = config.require_all_public_methods
 
-        # Create Ollama client with configurable base URL
-        self.client = ollama.Client(host=config.ollama_base_url)
+        # Create LangChain chat model with structured output support
+        base_model = create_chat_model(
+            config.llm_base_url,
+            self.model_name,
+            config.llm_api_key_env,
+            config.llm_timeout
+        )
+
+        # Configure model to output structured ValidationResult
+        self.model = base_model.with_structured_output(ValidationResult)
 
         # Load validation prompts
         self.layer1_prompt = self._load_prompt(config.validation_layer1_prompt_path)
@@ -63,7 +70,7 @@ class ValidationAgent:
             model=self.model_name,
             min_summary_length=self.min_summary_length,
             require_all_methods=self.require_all_public_methods,
-            base_url=config.ollama_base_url
+            base_url=config.llm_base_url
         )
 
     def _load_prompt(self, prompt_path: Path) -> str:
@@ -97,27 +104,16 @@ class ValidationAgent:
         try:
             logger.debug("Calling LLM validator", model=self.model_name)
 
-            response = self.client.chat(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": prompt},
-                    {"role": "user", "content": context}
-                ],
-                format=ValidationResult.model_json_schema(),
-                options={"temperature": 0.1}  # Low temperature for consistent validation
-            )
+            # Call LangChain model with structured output (returns ValidationResult directly)
+            from langchain_core.messages import SystemMessage, HumanMessage
 
-            # Parse response into ValidationResult
-            result_dict = json.loads(response['message']['content'])
-            return ValidationResult(**result_dict)
+            result = self.model.invoke([
+                SystemMessage(content=prompt),
+                HumanMessage(content=context)
+            ])
 
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse LLM validation response: {e}")
-            return ValidationResult(
-                passed=False,
-                issues=["LLM validation failed - could not parse response"],
-                refinement_instructions="Internal error - validation response was invalid"
-            )
+            return result
+
         except Exception as e:
             logger.exception(f"LLM validation error: {e}")
             return ValidationResult(

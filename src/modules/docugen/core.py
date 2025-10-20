@@ -5,6 +5,7 @@ This module contains the core functionality for the DocuGen system,
 including configuration management, validation, and utility functions.
 """
 
+import os
 import subprocess
 from pathlib import Path
 from typing import Dict, Any, Optional
@@ -12,6 +13,10 @@ from typing import Dict, Any, Optional
 import yaml
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class ModelConfig(BaseModel):
@@ -57,12 +62,16 @@ class ProcessingConfig(BaseModel):
     )
 
 
-class OllamaConfig(BaseModel):
-    """Configuration for Ollama/LLM connection."""
+class LLMConfig(BaseModel):
+    """Configuration for LLM connection (supports any OpenAI-compatible API)."""
 
     base_url: str = Field(
-        default="http://localhost:11434",
-        description="Base URL for Ollama API or OpenAI-compatible endpoint"
+        default="http://localhost:11434/v1",
+        description="Base URL for OpenAI-compatible API endpoint (Ollama, OpenRouter, Together AI, OpenAI, etc.)"
+    )
+    api_key_env: Optional[str] = Field(
+        default=None,
+        description="Environment variable name for API key (e.g., 'OPENAI_API_KEY', 'OPENROUTER_API_KEY'). Leave None for local Ollama."
     )
     timeout: int = Field(default=300, ge=1, description="Request timeout in seconds")
 
@@ -74,7 +83,7 @@ class DocuGenConfig(BaseModel):
     validation: ValidationConfig = Field(default_factory=ValidationConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     processing: ProcessingConfig = Field(default_factory=ProcessingConfig)
-    ollama: OllamaConfig = Field(default_factory=OllamaConfig)
+    llm: LLMConfig = Field(default_factory=LLMConfig)
 
     @property
     def output_path(self) -> Path:
@@ -199,6 +208,87 @@ def validate_input_path(input_path: str) -> Path:
 
     logger.debug(f"Input directory validated: {path}")
     return path
+
+
+def create_chat_model(base_url: str, model_name: str, api_key_env: Optional[str] = None, timeout: int = 300):
+    """
+    Create a LangChain chat model with support for OpenAI-compatible endpoints.
+
+    This function creates a ChatOpenAI instance that works with any OpenAI-compatible API:
+    - Ollama: http://localhost:11434/v1
+    - OpenRouter: https://openrouter.ai/api/v1
+    - Together AI: https://api.together.xyz/v1
+    - OpenAI: https://api.openai.com/v1
+
+    Args:
+        base_url: Base URL for the LLM API (must include /v1 for OpenAI-compatible APIs)
+        model_name: Name of the model to use (e.g., "codellama:7b", "gpt-4", "meta-llama/Llama-2-7b-chat-hf")
+        api_key_env: Environment variable name containing the API key (optional, defaults to "not-needed" for local Ollama)
+        timeout: Request timeout in seconds (default: 300)
+
+    Returns:
+        Configured ChatOpenAI instance (LangChain BaseChatModel)
+
+    Raises:
+        ValueError: If api_key_env is specified but environment variable is not set
+        ImportError: If langchain-openai is not installed
+
+    Example:
+        >>> # Local Ollama
+        >>> model = create_chat_model("http://localhost:11434/v1", "codellama:7b")
+
+        >>> # OpenRouter with API key
+        >>> model = create_chat_model("https://openrouter.ai/api/v1", "anthropic/claude-3-5-sonnet", "OPENROUTER_API_KEY")
+
+        >>> # OpenAI with API key
+        >>> model = create_chat_model("https://api.openai.com/v1", "gpt-4", "OPENAI_API_KEY")
+    """
+    try:
+        from langchain_openai import ChatOpenAI
+    except ImportError:
+        raise ImportError(
+            "langchain-openai is required to use LLM models. "
+            "Install it with: pip install langchain-openai"
+        )
+
+    # Get API key from environment if specified
+    if api_key_env:
+        api_key = os.getenv(api_key_env)
+        if not api_key:
+            raise ValueError(
+                f"API key environment variable '{api_key_env}' is not set. "
+                f"Set it in your .env file or environment: {api_key_env}=your-key-here"
+            )
+    else:
+        # For local Ollama, use a placeholder key
+        api_key = "not-needed"
+
+    # Ensure base_url ends with /v1 for OpenAI-compatible endpoints
+    if not base_url.endswith('/v1'):
+        logger.warning(f"base_url should end with '/v1' for OpenAI-compatible APIs. Got: {base_url}")
+        if not base_url.endswith('/'):
+            base_url += '/v1'
+        else:
+            base_url += 'v1'
+        logger.info(f"Adjusted base_url to: {base_url}")
+
+    # Create ChatOpenAI client (works with any OpenAI-compatible endpoint)
+    client = ChatOpenAI(
+        base_url=base_url,
+        api_key=api_key,
+        model=model_name,
+        timeout=timeout,
+        temperature=0  # Deterministic output for documentation
+    )
+
+    logger.debug(
+        f"Created chat model",
+        base_url=base_url,
+        model=model_name,
+        timeout=timeout
+    )
+
+    return client
 
 
 def verify_ollama_running() -> bool:

@@ -159,7 +159,9 @@ def document(
             detailing_model=doc_config.models.detailing,
             relationship_model=doc_config.models.relationship_mapper,
             validation_model=doc_config.models.validation,
-            ollama_base_url=doc_config.ollama.base_url,
+            llm_base_url=doc_config.llm.base_url,
+                llm_api_key_env=doc_config.llm.api_key_env,
+                llm_timeout=doc_config.llm.timeout,
             summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
             detailing_prompt_path=Path("src/modules/docugen/prompts/detailing_agent.md"),
             relationship_prompt_path=Path("src/modules/docugen/prompts/relationship_mapper.md"),
@@ -464,7 +466,9 @@ def test_layer1(input: str, config: Optional[str], output: Optional[str], limit:
             doc_config = DocuGenConfig.from_yaml(config_path)
             graph_config = GraphConfig(
                 summarizer_model=doc_config.models.summarizer,
-                ollama_base_url=doc_config.ollama.base_url,
+                llm_base_url=doc_config.llm.base_url,
+                llm_api_key_env=doc_config.llm.api_key_env,
+                llm_timeout=doc_config.llm.timeout,
                 summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
             )
         else:
@@ -652,7 +656,9 @@ def test_layer2(input: str, config: Optional[str], output: Optional[str], limit:
             graph_config = GraphConfig(
                 summarizer_model=doc_config.models.summarizer,
                 detailing_model=doc_config.models.detailing,
-                ollama_base_url=doc_config.ollama.base_url,
+                llm_base_url=doc_config.llm.base_url,
+                llm_api_key_env=doc_config.llm.api_key_env,
+                llm_timeout=doc_config.llm.timeout,
                 summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
                 detailing_prompt_path=Path("src/modules/docugen/prompts/detailing_agent.md"),
             )
@@ -879,7 +885,9 @@ def test_layer3(input: str, config: Optional[str], output: Optional[str], limit:
                 summarizer_model=doc_config.models.summarizer,
                 detailing_model=doc_config.models.detailing,
                 relationship_model=doc_config.models.relationship_mapper,
-                ollama_base_url=doc_config.ollama.base_url,
+                llm_base_url=doc_config.llm.base_url,
+                llm_api_key_env=doc_config.llm.api_key_env,
+                llm_timeout=doc_config.llm.timeout,
                 summarizer_prompt_path=Path("src/modules/docugen/prompts/file_summarizer.md"),
                 detailing_prompt_path=Path("src/modules/docugen/prompts/detailing_agent.md"),
                 relationship_prompt_path=Path("src/modules/docugen/prompts/relationship_mapper.md"),
@@ -1024,6 +1032,110 @@ def test_layer3(input: str, config: Optional[str], output: Optional[str], limit:
     except Exception as e:
         logger.exception(f"Test failed: {e}")
         console.print(f"[red]Error: {e}[/red]")
+        sys.exit(1)
+
+
+@main.command(name="test-connection")
+@click.option(
+    "--config",
+    "-c",
+    type=click.Path(exists=True),
+    help="Path to configuration YAML file (default: config.yaml)",
+)
+def test_connection(config: Optional[str]):
+    """
+    Test LLM connection using config.yaml settings.
+
+    Validates that the configured base_url and default model are accessible
+    by sending a simple test prompt. Works with all providers (Ollama, OpenRouter, OpenAI, etc.).
+
+    Examples:
+        docugen test-connection
+        docugen test-connection -c config.yaml
+    """
+    from langchain_core.messages import HumanMessage
+
+    console.print("\n[bold blue]DocuGen LLM Connection Test[/bold blue]")
+    console.print("[dim]" + "═" * 50 + "[/dim]\n")
+
+    # Load configuration
+    try:
+        if config:
+            config_path = validate_config_path(config)
+        else:
+            config_path = Path("config.yaml")
+            if not config_path.exists():
+                console.print("[red]Error: config.yaml not found[/red]")
+                console.print("Create one from: cp src/modules/docugen/config/config.example.yaml config.yaml")
+                sys.exit(1)
+
+        doc_config = DocuGenConfig.from_yaml(config_path)
+        base_url = doc_config.llm.base_url
+        model = doc_config.models.default
+        api_key_env = doc_config.llm.api_key_env
+
+    except Exception as e:
+        console.print(f"[red]Error loading config: {e}[/red]")
+        sys.exit(1)
+
+    # Display connection info
+    console.print(f"[cyan]Base URL:[/cyan] [yellow]{base_url}[/yellow]")
+    console.print(f"[cyan]Model:[/cyan] [yellow]{model}[/yellow]")
+    if api_key_env:
+        console.print(f"[cyan]API Key:[/cyan] [yellow]{api_key_env} (from .env)[/yellow]\n")
+    else:
+        console.print(f"[cyan]API Key:[/cyan] [dim]None (local endpoint)[/dim]\n")
+
+    # Test connection
+    try:
+        console.print("[dim]Sending test prompt: 'Say hello in 5 words or less'[/dim]\n")
+
+        # Create LangChain chat model
+        chat_model = create_chat_model(base_url, model, api_key_env, doc_config.llm.timeout)
+
+        # Send test prompt
+        response = chat_model.invoke([
+            HumanMessage(content="Say hello in 5 words or less")
+        ])
+
+        # Extract response
+        message = response.content
+
+        # Display success
+        console.print(Panel.fit(
+            f"[green]✓ Connection successful![/green]\n\n"
+            f"Response: [white]{message}[/white]",
+            title="[bold green]Test Passed[/bold green]",
+            border_style="green"
+        ))
+
+        sys.exit(0)
+
+    except Exception as e:
+        # Display failure with provider-appropriate troubleshooting
+        is_local = "localhost" in base_url or "127.0.0.1" in base_url
+
+        troubleshooting = f"[dim]Troubleshooting:[/dim]\n• Verify {base_url} is accessible\n"
+
+        if is_local:
+            troubleshooting += f"• Check if local LLM server is running\n"
+            troubleshooting += f"• For Ollama: ollama serve\n"
+            troubleshooting += f"• Verify model exists: ollama list\n"
+            troubleshooting += f"• Pull model if needed: ollama pull {model}"
+        else:
+            troubleshooting += f"• Check your API key in .env file\n"
+            troubleshooting += f"• Verify API key environment variable: {api_key_env}\n"
+            troubleshooting += f"• Check provider model name format\n"
+            troubleshooting += f"• Ensure you have API credits/quota"
+
+        console.print(Panel.fit(
+            f"[red]✗ Connection failed[/red]\n\n"
+            f"Error: [yellow]{str(e)}[/yellow]\n\n"
+            f"{troubleshooting}",
+            title="[bold red]Test Failed[/bold red]",
+            border_style="red"
+        ))
+
         sys.exit(1)
 
 
