@@ -23,6 +23,20 @@ Your response must be valid JSON matching this structure:
 
 ```json
 {
+  "namespace_dependencies": [
+    {
+      "namespace": "MyApp.Services",
+      "inferred_module": "MyApp.Services",
+      "purpose": "Provides business logic and domain services",
+      "dependency_type": "Internal"
+    },
+    {
+      "namespace": "System.Linq",
+      "inferred_module": "System.Linq",
+      "purpose": "LINQ query operations",
+      "dependency_type": "Framework"
+    }
+  ],
   "dependencies": [
     {
       "file": "path/to/DependentFile.cs",
@@ -42,7 +56,8 @@ Your response must be valid JSON matching this structure:
 ```
 
 **Important**:
-- `dependencies` is an array of objects, each with `file`, `classes_used`, `purpose`, and `relationship_type`
+- `namespace_dependencies` is a NEW array containing namespace-level dependencies extracted from using statements
+- `dependencies` is an array of file-level dependencies (existing functionality)
 - `dependents` is an array of simple objects with `file` and `how_used` as key-value pairs
 - `architectural_role` is a single string describing the pattern/role
 - All arrays can be empty if there are no dependencies/dependents
@@ -80,6 +95,131 @@ Your response must be valid JSON matching this structure:
 - ✓ Place file in architectural **layers** (Presentation, Business Logic, Data Access)
 - ✓ Note adherence to **SOLID principles** if evident
 - ✓ Identify **bounded contexts** in DDD architectures
+
+## Namespace Analysis (Primary Dependency Source)
+
+Since only C# files are available (no .csproj), extract module dependencies from namespace analysis:
+
+### Step 1: Extract Current File's Namespace
+Parse the namespace declaration:
+```csharp
+namespace MyApp.UI.Controllers
+{
+    public class UserController { ... }
+}
+```
+**Current Module:** `MyApp.UI` (first two parts of namespace)
+
+### Step 2: Extract All Using Statements
+Find all using directives at the top of the file:
+```csharp
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using MyApp.Services;
+using MyApp.Data.Models;
+using Newtonsoft.Json;
+```
+
+### Step 3: Classify Each Dependency
+
+| Namespace Pattern | Type | Purpose Inference |
+|-------------------|------|-------------------|
+| `System.*` | Framework | Standard .NET framework library |
+| `Microsoft.*` | Framework | Microsoft extensions and libraries |
+| `{ProjectRoot}.Services.*` | Internal | Business logic and domain services |
+| `{ProjectRoot}.Data.*` | Internal | Data access and persistence layer |
+| `{ProjectRoot}.Models.*` | Internal | Domain models and data structures |
+| `{ProjectRoot}.UI.*` | Internal | User interface components |
+| `{ProjectRoot}.Controllers.*` | Internal | HTTP request handlers and routing |
+| `{ProjectRoot}.Repositories.*` | Internal | Data repository pattern implementations |
+| `{ProjectRoot}.Utilities.*` | Internal | Common utility functions and helpers |
+| Others (not System/Microsoft) | ThirdParty | External NuGet packages |
+
+**Important:** Identify the project root (e.g., "MyApp") from the current file's namespace, then classify all using statements accordingly.
+
+### Step 4: Infer Purpose from Naming Conventions
+
+**Module Name Pattern → Purpose:**
+- `*.Services` → "Provides business logic and domain services"
+- `*.Data` or `*.Repository` or `*.Repositories` → "Handles data persistence and retrieval"
+- `*.Models` or `*.Entities` → "Defines domain models and data structures"
+- `*.UI` or `*.Views` → "User interface components and presentation"
+- `*.Controllers` or `*.API` → "Handles HTTP requests and API routing"
+- `*.Utilities` or `*.Helpers` or `*.Common` → "Common utility functions and helpers"
+- `*.Infrastructure` → "Infrastructure concerns and cross-cutting functionality"
+- `*.Core` → "Core domain logic and shared functionality"
+- `System.Linq` → "LINQ query operations for data manipulation"
+- `System.Collections.Generic` → "Generic collection types and data structures"
+- `System.Threading.Tasks` → "Asynchronous programming and task management"
+- For third-party: Try to infer from package name (e.g., "Newtonsoft.Json" → "JSON serialization and deserialization")
+
+### Step 5: Filter and Deduplicate
+- **Exclude self-references:** Don't include the current file's own module
+- **Deduplicate:** If multiple using statements from same module (e.g., `MyApp.Services.User` and `MyApp.Services.Auth`), create ONE entry for `MyApp.Services`
+- **Skip trivial framework imports:** Optional: Skip very common ones like `System` alone (but include `System.Linq`, `System.Collections.Generic`, etc.)
+
+### Example Namespace Analysis
+
+**Input File:** `MyApp.UI.Controllers.UserController.cs`
+```csharp
+namespace MyApp.UI.Controllers
+{
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
+    using MyApp.Services;
+    using MyApp.Services.Authentication;
+    using MyApp.Data.Models;
+    using Newtonsoft.Json;
+
+    public class UserController : BaseController { ... }
+}
+```
+
+**Output:**
+```json
+{
+  "namespace_dependencies": [
+    {
+      "namespace": "System.Linq",
+      "inferred_module": "System.Linq",
+      "purpose": "LINQ query operations for data manipulation",
+      "dependency_type": "Framework"
+    },
+    {
+      "namespace": "System.Collections.Generic",
+      "inferred_module": "System.Collections.Generic",
+      "purpose": "Generic collection types and data structures",
+      "dependency_type": "Framework"
+    },
+    {
+      "namespace": "MyApp.Services",
+      "inferred_module": "MyApp.Services",
+      "purpose": "Provides business logic and domain services",
+      "dependency_type": "Internal"
+    },
+    {
+      "namespace": "MyApp.Data.Models",
+      "inferred_module": "MyApp.Data",
+      "purpose": "Handles data persistence and retrieval",
+      "dependency_type": "Internal"
+    },
+    {
+      "namespace": "Newtonsoft.Json",
+      "inferred_module": "Newtonsoft.Json",
+      "purpose": "JSON serialization and deserialization",
+      "dependency_type": "ThirdParty"
+    }
+  ]
+}
+```
+
+**Notes:**
+- `System` alone was skipped (too generic)
+- Both `MyApp.Services` and `MyApp.Services.Authentication` were combined into one `MyApp.Services` entry
+- `inferred_module` for internal modules uses first 2 namespace parts (MyApp.Services, MyApp.Data)
+- Current module (`MyApp.UI`) was excluded
 
 ## Relationship Types
 

@@ -17,6 +17,20 @@ class FileSummary(BaseModel):
     purpose: str = Field(..., description="Primary responsibility of this file")
     category: str = Field(..., description="Type of file (e.g., Service, Repository, Controller)")
 
+    # Module context fields (for enhanced Layer 4 synthesis)
+    primary_namespace: str = Field(
+        default="",
+        description="Module name from first 2 namespace parts (e.g., MyApp.Services)"
+    )
+    module_contribution: str = Field(
+        default="",
+        description="What this file contributes to the module (one sentence)"
+    )
+    key_technologies: List[str] = Field(
+        default_factory=list,
+        description="Main frameworks/libraries used in this file (max 3)"
+    )
+
 
 class MethodDoc(BaseModel):
     """Documentation for a single method."""
@@ -27,10 +41,30 @@ class MethodDoc(BaseModel):
     returns: Optional[str] = None
 
 
+class AttributeDoc(BaseModel):
+    """Documentation for a class field/attribute."""
+    name: str = Field(..., description="Name of the attribute/field")
+    data_type: str = Field(..., description="Data type of the attribute")
+    visibility: str = Field(..., description="Visibility modifier (public, private, protected, internal)")
+    description: str = Field(..., description="One sentence description of what this attribute is used for")
+
+
+class PropertyDoc(BaseModel):
+    """Documentation for a class property."""
+    name: str = Field(..., description="Name of the property")
+    data_type: str = Field(..., description="Data type of the property")
+    description: str = Field(..., description="One sentence description of what this property represents")
+    is_readonly: bool = Field(default=False, description="Whether the property is read-only")
+
+
 class ClassDoc(BaseModel):
     """Documentation for a single class."""
     name: str
+    namespace: str = Field(default="", description="Full namespace path (e.g., MyApp.Services)")
+    base_classes: List[str] = Field(default_factory=list, description="Base classes and interfaces this class derives from")
     description: str
+    attributes: List[AttributeDoc] = Field(default_factory=list, description="Class fields/attributes")
+    properties: List[PropertyDoc] = Field(default_factory=list, description="Class properties")
     methods: List[MethodDoc] = Field(default_factory=list)
 
 
@@ -41,16 +75,25 @@ class DetailedDocs(BaseModel):
 
 
 class DependencyInfo(BaseModel):
-    """Information about a dependency."""
+    """Information about a file-level dependency."""
     file: str
     classes_used: List[str] = Field(default_factory=list)
     purpose: str
     relationship_type: str  # Composition, Inheritance, Usage, Injection
 
 
+class NamespaceDependency(BaseModel):
+    """Namespace-level dependency inferred from using statements."""
+    namespace: str = Field(..., description="Full namespace (e.g., MyApp.Services or System.Linq)")
+    inferred_module: str = Field(..., description="Inferred module name (e.g., MyApp.Services)")
+    purpose: str = Field(..., description="Inferred purpose of this dependency")
+    dependency_type: str = Field(..., description="Internal, Framework, or ThirdParty")
+
+
 class RelationshipMap(BaseModel):
     """Layer 3 output: Cross-file relationships."""
-    dependencies: List[DependencyInfo] = Field(default_factory=list, description="What this file depends on")
+    namespace_dependencies: List[NamespaceDependency] = Field(default_factory=list, description="Namespace-level dependencies from using statements")
+    dependencies: List[DependencyInfo] = Field(default_factory=list, description="File-level dependencies (classes this file depends on)")
     dependents: List[Dict[str, str]] = Field(default_factory=list, description="What depends on this file")
     architectural_role: str = Field(default="", description="Design pattern or architectural layer")
 

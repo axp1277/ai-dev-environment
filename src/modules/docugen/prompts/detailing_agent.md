@@ -25,7 +25,25 @@ Your response must be valid JSON matching this structure:
   "classes": [
     {
       "name": "ClassName",
-      "description": "Detailed description of what this class does, its responsibilities, and how to use it.",
+      "namespace": "Full.Namespace.Path",
+      "base_classes": ["BaseClass", "IInterface"],
+      "description": "One paragraph description of what this class does, its responsibilities, and how to use it.",
+      "attributes": [
+        {
+          "name": "_repository",
+          "data_type": "IUserRepository",
+          "visibility": "private",
+          "description": "One sentence description of what this attribute is used for"
+        }
+      ],
+      "properties": [
+        {
+          "name": "IsActive",
+          "data_type": "bool",
+          "description": "One sentence description of what this property represents",
+          "is_readonly": false
+        }
+      ],
       "methods": [
         {
           "name": "MethodName",
@@ -50,10 +68,14 @@ Your response must be valid JSON matching this structure:
 ```
 
 **Important**:
-- `classes` array contains all classes/interfaces with their methods
+- `classes` array contains all classes/interfaces with their complete documentation
+- Each class MUST include `namespace` extracted from the namespace declaration
+- Each class MUST include `base_classes` array listing all inherited classes and implemented interfaces
+- `attributes` array contains class fields (private/public variables declared at class level)
+- `properties` array contains C# properties (with get/set accessors) - separate from methods
+- `methods` array contains methods and constructors only
 - `standalone_methods` array contains methods that are NOT inside any class (rare in C#)
 - Each method must have `name`, `signature`, `description`, `parameters` (list of strings), and `returns` (string or null)
-- Properties should be documented as methods if they have getters/setters
 
 ## Guidelines
 
@@ -91,6 +113,107 @@ Your response must be valid JSON matching this structure:
 - ✓ Mention **valid values** or **constraints** if applicable
 - ✓ Note if property is **read-only** or **settable**
 - ✓ Describe **default values** if relevant
+
+## Extraction Instructions
+
+### Extracting Namespace
+Parse the namespace declaration from the C# file:
+
+```csharp
+namespace MyApp.Services.UserManagement
+{
+    public class UserService { ... }
+}
+```
+
+**Output:** `"namespace": "MyApp.Services.UserManagement"`
+
+- If no namespace is found, use empty string `""`
+- Use the full namespace path (all parts separated by dots)
+
+### Extracting Base Classes and Interfaces
+Identify base classes and interfaces from the class signature:
+
+```csharp
+public class UserService : BaseService, IUserService, IDisposable
+```
+
+**Output:** `"base_classes": ["BaseService", "IUserService", "IDisposable"]`
+
+- Include ALL classes and interfaces after the colon `:`
+- Preserve the order as written in the code
+- If no base classes/interfaces, use empty array `[]`
+
+### Distinguishing Attributes vs Properties
+
+**Attributes (Fields):**
+```csharp
+private readonly IUserRepository _repository;
+public int MaxRetries = 3;
+private string _connectionString;
+```
+These are **variable declarations** at class level.
+
+**Properties:**
+```csharp
+public string Name { get; set; }
+public bool IsActive { get; }
+public int Count { get; private set; }
+```
+These have `{ get; set; }` or `{ get; }` syntax.
+
+**Rule:** If it has curly braces `{}` with get/set, it's a **property**. Otherwise, it's an **attribute**.
+
+### Extracting Attributes
+For each field/attribute, extract:
+
+```csharp
+private readonly IUserRepository _repository;
+```
+
+**Output:**
+```json
+{
+  "name": "_repository",
+  "data_type": "IUserRepository",
+  "visibility": "private",
+  "description": "Handles user data persistence and retrieval"
+}
+```
+
+**Visibility Detection:**
+- Look for keywords: `public`, `private`, `protected`, `internal`
+- Default to `private` if no modifier is specified
+- Include modifiers like `readonly`, `static`, `const` in the description if important
+
+### Extracting Properties
+For each property, extract:
+
+```csharp
+public string Email { get; set; }
+public int Count { get; }
+```
+
+**Output:**
+```json
+{
+  "name": "Email",
+  "data_type": "string",
+  "description": "User's email address used for authentication",
+  "is_readonly": false
+},
+{
+  "name": "Count",
+  "data_type": "int",
+  "description": "Number of items in the collection",
+  "is_readonly": true
+}
+```
+
+**Is Readonly Detection:**
+- `{ get; }` only → `is_readonly: true`
+- `{ get; set; }` → `is_readonly: false`
+- `{ get; private set; }` → `is_readonly: false` (still settable internally)
 
 ## Documentation Format by Language
 
@@ -164,30 +287,106 @@ public User GetUserById(int userId)
 }
 ```
 
-### Example 2: C# Class Documentation
+### Example 2: Complete C# Class Documentation
 
-**Output**:
-```json
+**Input:**
+```csharp
+namespace MyApp.Services
 {
-  "class_docs": {
-    "UserService": "Manages user account operations including creation, retrieval, updates, and deletion. This service implements business logic for user management and serves as an intermediary between API controllers and the data access layer. It handles validation, authorization checks, and coordinates with other services as needed for user-related operations."
-  }
+    public class UserService : BaseService, IUserService
+    {
+        private readonly IUserRepository _repository;
+        private readonly ILogger _logger;
+        public int MaxRetries = 3;
+
+        public string ServiceName { get; }
+        public bool IsInitialized { get; set; }
+
+        public UserService(IUserRepository repository, ILogger logger) { ... }
+
+        public User GetUserById(int userId) { ... }
+
+        public async Task<User> CreateUserAsync(string email, string password) { ... }
+    }
 }
 ```
 
-### Example 3: Property Documentation
-
-**Input**:
-```csharp
-public string Email { get; set; }
-```
-
-**Output**:
+**Output:**
 ```json
 {
-  "property_docs": {
-    "User.Email": "The user's email address used for authentication and communication. Must be unique across all users and must be in valid email format. Maximum length: 255 characters."
-  }
+  "classes": [
+    {
+      "name": "UserService",
+      "namespace": "MyApp.Services",
+      "base_classes": ["BaseService", "IUserService"],
+      "description": "Manages user account operations including creation, retrieval, updates, and deletion. This service implements business logic for user management and serves as an intermediary between API controllers and the data access layer.",
+      "attributes": [
+        {
+          "name": "_repository",
+          "data_type": "IUserRepository",
+          "visibility": "private",
+          "description": "Handles user data persistence and database operations"
+        },
+        {
+          "name": "_logger",
+          "data_type": "ILogger",
+          "visibility": "private",
+          "description": "Logs service operations and errors for monitoring"
+        },
+        {
+          "name": "MaxRetries",
+          "data_type": "int",
+          "visibility": "public",
+          "description": "Maximum number of retry attempts for failed operations"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ServiceName",
+          "data_type": "string",
+          "description": "The name of this service instance",
+          "is_readonly": true
+        },
+        {
+          "name": "IsInitialized",
+          "data_type": "bool",
+          "description": "Indicates whether the service has been properly initialized",
+          "is_readonly": false
+        }
+      ],
+      "methods": [
+        {
+          "name": "UserService",
+          "signature": "public UserService(IUserRepository repository, ILogger logger)",
+          "description": "Initializes a new instance of UserService with required dependencies",
+          "parameters": [
+            "repository: Repository for user data persistence",
+            "logger: Logger for service operations"
+          ],
+          "returns": null
+        },
+        {
+          "name": "GetUserById",
+          "signature": "public User GetUserById(int userId)",
+          "description": "Retrieves a user account by their unique identifier",
+          "parameters": [
+            "userId: The unique integer identifier for the user account"
+          ],
+          "returns": "User object if found, null if user does not exist"
+        },
+        {
+          "name": "CreateUserAsync",
+          "signature": "public async Task<User> CreateUserAsync(string email, string password)",
+          "description": "Asynchronously creates a new user account with the provided credentials",
+          "parameters": [
+            "email: User's email address (must be unique)",
+            "password: Password meeting security requirements"
+          ],
+          "returns": "The newly created User object with assigned ID"
+        }
+      ]
+    }
+  ]
 }
 ```
 

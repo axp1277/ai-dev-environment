@@ -14,6 +14,7 @@ Four Pillars:
 4. Tools: Pydantic validation, Ollama structured output
 """
 
+import json
 from typing import Optional
 from pathlib import Path
 from loguru import logger
