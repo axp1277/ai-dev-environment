@@ -1,0 +1,33 @@
+---------------------------------------- Section 4 ----------------------------------------
+4.x.x.x.x Library/Module Name
+
+One paragraph description of the module.
+
+---------------------------------------- Section 5 ----------------------------------------
+5.x.x.x Library/Module Name
+
+One paragraph description of the module.
+
+5.x.x.x.1 Dependencies
+
+Bulleted list of dependencies as defined in the *.csproj file where the "ProjectReference" tag defines the required dependencies. Include one sentence description of why the dependency is referenced.
+
+5.x.x.x.2 Classes
+
+One subsection for each view which consists of two files. A view consists of two files both of which should be grouped into a single subsection. The first file is a *.xaml file which defines the layout of the view based on the Windows Presentation Foundation (WPF). The second file is a *.xaml.cs file which defines code required to make the view work. Include a list of controls and a one sentence description of each control.
+One subsection for each class that is not part of a view. The classes are contained in the *.cs files. A *.cs file may have a combination of one or more classes, interfaces, enumerations, structs.
+
+Both types of subsections should be structured as follows:
+
+5.x.x.x.2.x Class/View/Interface/Enum/Struct Name
+
+A single line indicating the namespace of the class/view/interface/struct.
+    if the class or interface is derived or an extension of another class or interface, list the classes and interfaces that were derived and/or extended. 
+
+One paragraph description of the class/view/interface/enum/struct'.
+
+Bulleted list of attributes/variables including data type and whether it is public or private followed by a one sentence description of what each attribute/variable is used for.
+
+Bulleted list of properties including data type followed by a one sentence description of what each property is used for. If the property contains more complex logic, a longer description is acceptable.
+
+Bulleted list of methods starting with the full signature of the method followed by a one paragraph decription of what the method does. Ensure to include constructors as methods.
