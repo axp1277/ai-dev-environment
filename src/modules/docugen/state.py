@@ -147,6 +147,7 @@ class GraphConfig(BaseModel):
     summarizer_model: str = Field(default="codellama:7b")
     detailing_model: str = Field(default="codellama:13b")
     relationship_model: str = Field(default="codellama:7b")
+    documentation_model: Optional[str] = Field(default=None, description="Model for final documentation synthesis (Layer 4, defaults to detailing_model)")
     validation_model: Optional[str] = Field(default=None, description="Model for validation (defaults to detailing_model)")
 
     # LLM connection (OpenAI-compatible endpoint)
@@ -181,3 +182,7 @@ class GraphConfig(BaseModel):
     def get_validation_model(self) -> str:
         """Get the model to use for validation (defaults to detailing_model)."""
         return self.validation_model if self.validation_model else self.detailing_model
+
+    def get_documentation_model(self) -> str:
+        """Get the model to use for final documentation synthesis (defaults to detailing_model)."""
+        return self.documentation_model if self.documentation_model else self.detailing_model

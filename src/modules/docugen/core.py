@@ -26,6 +26,7 @@ class ModelConfig(BaseModel):
     summarizer: str = Field(default="codellama:7b", description="Model for file summarization (Layer 1)")
     detailing: str = Field(default="codellama:13b", description="Model for detailed documentation (Layer 2)")
     relationship_mapper: str = Field(default="codellama:7b", description="Model for relationship mapping (Layer 3)")
+    documentation: Optional[str] = Field(default=None, description="Model for final documentation synthesis (Layer 4, defaults to detailing model if not specified)")
     validation: Optional[str] = Field(default=None, description="Model for validation (defaults to detailing model if not specified)")
 
 

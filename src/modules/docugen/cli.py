@@ -158,6 +158,7 @@ def document(
             summarizer_model=doc_config.models.summarizer,
             detailing_model=doc_config.models.detailing,
             relationship_model=doc_config.models.relationship_mapper,
+            documentation_model=doc_config.models.documentation,
             validation_model=doc_config.models.validation,
             llm_base_url=doc_config.llm.base_url,
                 llm_api_key_env=doc_config.llm.api_key_env,

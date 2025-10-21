@@ -37,7 +37,7 @@ class DocumentationAgent:
             config: Graph configuration with model and prompt settings
         """
         self.config = config
-        self.model_name = config.detailing_model  # Use detailing model for quality
+        self.model_name = config.get_documentation_model()  # Use documentation model (defaults to detailing)
         self.prompt_path = Path("src/modules/docugen/prompts/documentation_agent.md")
 
         # Create LangChain chat model
@@ -162,6 +162,8 @@ Output ONLY the markdown content, no preamble or explanation."""
         """
         Prepare the context prompt for the LLM.
 
+        Provides ONLY the JSON data - all instructions are in the system prompt.
+
         Args:
             layer1_data: List of file summaries
             layer2_data: List of detailed documentation
@@ -169,18 +171,15 @@ Output ONLY the markdown content, no preamble or explanation."""
             project_name: Name of the project
 
         Returns:
-            Formatted context string
+            Formatted JSON data only
         """
-        return f"""Generate comprehensive markdown documentation for the {project_name} project.
+        return f"""Project: {project_name}
 
-# Layer 1: File Summaries
+# Layer 1 Data (File Summaries)
 {json.dumps(layer1_data, indent=2)}
 
-# Layer 2: Detailed Documentation
+# Layer 2 Data (Detailed Documentation)
 {json.dumps(layer2_data, indent=2)}
 
-# Layer 3: Relationships and Architecture
-{json.dumps(layer3_data, indent=2)}
-
-Please create a well-structured, comprehensive markdown documentation that synthesizes
-all this information into a cohesive technical document."""
+# Layer 3 Data (Relationships and Architecture)
+{json.dumps(layer3_data, indent=2)}"""

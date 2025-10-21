@@ -16,15 +16,16 @@ llm:
   # API key environment variable (leave null for local Ollama)
   api_key_env: null  # e.g., "OPENROUTER_API_KEY", "OPENAI_API_KEY"
 
-  timeout: 300  # Request timeout (seconds)
+  timeout: 1200  # Request timeout (seconds) - Large value for Layer 4 synthesis of entire codebase
 
 # Step 2: Model Selection
 # -----------------------
 models:
   default: "mistral-nemo:latest"        # General purpose
-  summarizer: "qwen3:1.7b"              # Layer 1 - Fast, high-level summaries
+  summarizer: "gemma3n:e4b"              # Layer 1 - Fast, high-level summaries
   detailing: "granite3.3:latest"        # Layer 2 - Detailed documentation (quality critical)
-  relationship_mapper: "qwen3:1.7b"     # Layer 3 - Dependency analysis
+  relationship_mapper: "granite3.3:latest"  # Layer 3 - Dependency analysis (upgraded from qwen3:1.7b for better performance)
+  documentation: "granite3.3:latest"  # Layer 4 - Final documentation synthesis (faster model for large context)
   validation: "granite3.3:latest"       # Validation model (defaults to detailing if null)
 
 # Step 3: Quality Validation
@@ -44,7 +45,7 @@ output:
 # Step 5: Processing Options
 # ---------------------------
 processing:
-  parallel_files: 4                     # Concurrent file processing (1-16, adjust for hardware)
+  parallel_files: 1                     # Concurrent file processing (reduced to avoid timeouts with large models)
   enable_incremental: true              # Only re-process changed files (not yet implemented)
   supported_languages:
     - "csharp"

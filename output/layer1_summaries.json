@@ -1,0 +1,24 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe/Program.cs",
+    "summary": "This tool flattens a codebase into a Markdown file, processing files within a specified root directory. It extracts information like file paths and content, and outputs a Markdown document with relative paths and code blocks.",
+    "purpose": "Codebase flattening and Markdown generation",
+    "category": "Utility",
+    "key_classes": [
+      "Program",
+      "RootCommand",
+      "FileHelper",
+      "CodeFileHandler",
+      "FileMetadata"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe/AssemblyInfo.cs",
+    "summary": "This file is an assembly information file, specifying visibility for internal types. It allows the 'Flattener.Tests' project to access internal components of the current assembly for testing purposes.",
+    "purpose": "Specifies internal assembly visibility for testing",
+    "category": "Build Metadata",
+    "key_classes": [
+      "AssemblyInfo"
+    ]
+  }
+]

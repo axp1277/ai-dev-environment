@@ -1,0 +1,39 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe/Program.cs",
+    "architectural_role": "Utility Application (Command-Line Tool)",
+    "dependencies": [
+      {
+        "file": "Program.cs",
+        "classes_used": [
+          "RootCommand",
+          "Option",
+          "ConfigurationManager",
+          "FileHelper",
+          "CodeFileHandler",
+          "FileMetadata"
+        ],
+        "purpose": "Command-line interface setup and file processing logic",
+        "relationship_type": "Uses"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "Program.cs",
+        "potential_usage_patterns": "Invoked from the command line for codebase flattening and Markdown generation.",
+        "relationship_type": "Used by"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe/AssemblyInfo.cs",
+    "architectural_role": "Build Metadata Configuration File",
+    "dependencies": [],
+    "dependents": [
+      {
+        "file": "Flattener.Tests/Program.cs",
+        "how_used": "The InternalsVisibleTo attribute grants internal types and members visibility to Flattener.Tests for testing purposes."
+      }
+    ]
+  }
+]
