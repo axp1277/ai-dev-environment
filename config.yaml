@@ -25,7 +25,7 @@ models:
   summarizer: "gemma3n:e4b"              # Layer 1 - Fast, high-level summaries
   detailing: "granite3.3:latest"        # Layer 2 - Detailed documentation (quality critical)
   relationship_mapper: "granite3.3:latest"  # Layer 3 - Dependency analysis (upgraded from qwen3:1.7b for better performance)
-  documentation: "granite3.3:latest"  # Layer 4 - Final documentation synthesis (faster model for large context)
+  documentation: "mistral-nemo:latest"  # Layer 4 - Final documentation synthesis (better at following formatting instructions)
   validation: "granite3.3:latest"       # Validation model (defaults to detailing if null)
 
 # Step 3: Quality Validation

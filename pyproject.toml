@@ -1,6 +1,6 @@
 [project]
 name = "ai-dev-environment"
-version = "0.6.0"
+version = "0.6.1"
 description = "AI-powered development environment with multi-agent code documentation generator"
 readme = "README.md"
 requires-python = ">=3.11"
