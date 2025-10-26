@@ -1,4 +1,6 @@
-# Vision
+# AI Coder Commander
+
+## Vision
 
 Create a Discord-based command interface for Claude Code that enables asynchronous interaction with AI coding agents running locally. This system will allow developers to send commands through a private Discord channel and receive responses from the AI coder, eliminating the need to actively monitor long-running coding tasks.
 
