@@ -3,47 +3,88 @@ C# Structure Parser
 
 This module provides functionality to parse C# files and extract their structure,
 including classes, attributes (fields/properties), and methods.
+
+Migrated to Pydantic for better validation, serialization, and integration
+with LangGraph workflows.
 """
 
-from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 from pathlib import Path
+from pydantic import BaseModel, Field
 import tree_sitter_c_sharp as tscsharp
 from tree_sitter import Language, Parser, Node
 
 
-@dataclass
-class MethodInfo:
+class MethodInfo(BaseModel):
     """Represents a method in a C# class."""
     name: str
     return_type: str
-    parameters: List[str]
-    modifiers: List[str]
+    parameters: List[str] = Field(default_factory=list)
+    modifiers: List[str] = Field(default_factory=list)
     line_number: int
     is_constructor: bool = False
 
+    class Config:
+        """Pydantic configuration."""
+        frozen = False  # Allow modification during parsing
 
-@dataclass
-class AttributeInfo:
-    """Represents a field or property in a C# class."""
+
+class AttributeInfo(BaseModel):
+    """Represents a field in a C# class."""
     name: str
     type: str
-    modifiers: List[str]
+    modifiers: List[str] = Field(default_factory=list)
     line_number: int
-    is_property: bool = False
+
+    class Config:
+        """Pydantic configuration."""
+        frozen = False
 
 
-@dataclass
-class ClassInfo:
-    """Represents a C# class with its attributes and methods."""
+class PropertyInfo(BaseModel):
+    """Represents a property in a C# class."""
     name: str
-    namespace: Optional[str]
-    modifiers: List[str]
-    base_classes: List[str]
+    type: str
+    modifiers: List[str] = Field(default_factory=list)
     line_number: int
-    attributes: List[AttributeInfo] = field(default_factory=list)
-    methods: List[MethodInfo] = field(default_factory=list)
-    nested_classes: List['ClassInfo'] = field(default_factory=list)
+    has_getter: bool = True
+    has_setter: bool = True
+
+    class Config:
+        """Pydantic configuration."""
+        frozen = False
+
+
+class ClassInfo(BaseModel):
+    """Represents a C# class with its attributes, properties, and methods."""
+    name: str
+    namespace: Optional[str] = None
+    modifiers: List[str] = Field(default_factory=list)
+    base_class: Optional[str] = None  # Single base class (C# only allows one)
+    interfaces: List[str] = Field(default_factory=list)  # Interfaces implemented
+    line_number: int
+    attributes: List[AttributeInfo] = Field(default_factory=list)  # Fields
+    properties: List[PropertyInfo] = Field(default_factory=list)  # Properties
+    methods: List[MethodInfo] = Field(default_factory=list)
+    nested_classes: List['ClassInfo'] = Field(default_factory=list)
+    is_partial: bool = False  # True if class has 'partial' modifier
+    is_nested: bool = False  # True if class is nested inside another class
+
+    class Config:
+        """Pydantic configuration."""
+        frozen = False
+
+
+class StructureSnapshot(BaseModel):
+    """Complete structural snapshot of a C# file."""
+    file_path: str
+    namespace: Optional[str] = None
+    classes: List[ClassInfo] = Field(default_factory=list)
+    dependencies: List[str] = Field(default_factory=list)  # From .csproj
+
+    class Config:
+        """Pydantic configuration."""
+        frozen = False
 
 
 class CSharpStructureParser:
@@ -54,42 +95,49 @@ class CSharpStructureParser:
         self.language = Language(tscsharp.language())
         self.parser = Parser(self.language)
     
-    def parse_file(self, file_path: str) -> List[ClassInfo]:
+    def parse_file(self, file_path: str) -> StructureSnapshot:
         """
         Parse a C# file and extract all class structures.
-        
+
         Args:
             file_path: Path to the C# file
-            
+
         Returns:
-            List of ClassInfo objects representing all classes in the file
+            StructureSnapshot containing all classes and metadata
         """
         with open(file_path, 'r', encoding='utf-8') as f:
             source_code = f.read()
-        
-        return self.parse_source(source_code)
-    
-    def parse_source(self, source_code: str) -> List[ClassInfo]:
+
+        return self.parse_source(source_code, file_path)
+
+    def parse_source(self, source_code: str, file_path: str = "") -> StructureSnapshot:
         """
         Parse C# source code and extract all class structures.
-        
+
         Args:
             source_code: C# source code as a string
-            
+            file_path: Optional file path for the snapshot
+
         Returns:
-            List of ClassInfo objects representing all classes in the source
+            StructureSnapshot containing all classes and metadata
         """
         tree = self.parser.parse(bytes(source_code, 'utf8'))
         root_node = tree.root_node
-        
+
         # Find the namespace(s) and classes
         classes = []
         namespace = self._extract_namespace(root_node)
-        
+
         # Find all class declarations
         self._find_classes(root_node, namespace, classes)
-        
-        return classes
+
+        # Create and return StructureSnapshot
+        return StructureSnapshot(
+            file_path=file_path,
+            namespace=namespace,
+            classes=classes,
+            dependencies=[]  # Will be populated by .csproj parser
+        )
     
     def _extract_namespace(self, node: Node) -> Optional[str]:
         """Extract the namespace from the syntax tree."""
@@ -104,12 +152,12 @@ class CSharpStructureParser:
     def _find_classes(self, node: Node, namespace: Optional[str], classes: List[ClassInfo], parent_class: Optional[ClassInfo] = None):
         """Recursively find all class declarations in the syntax tree."""
         if node.type == 'class_declaration':
-            class_info = self._parse_class(node, namespace)
+            class_info = self._parse_class(node, namespace, is_nested=parent_class is not None)
             if parent_class:
                 parent_class.nested_classes.append(class_info)
             else:
                 classes.append(class_info)
-            
+
             # Look for nested classes
             body_node = self._find_child_by_field(node, 'body')
             if body_node:
@@ -119,44 +167,52 @@ class CSharpStructureParser:
             # Continue searching in children
             for child in node.children:
                 self._find_classes(child, namespace, classes, parent_class)
-    
-    def _parse_class(self, node: Node, namespace: Optional[str]) -> ClassInfo:
+
+    def _parse_class(self, node: Node, namespace: Optional[str], is_nested: bool = False) -> ClassInfo:
         """Parse a class declaration node."""
         name_node = self._find_child_by_field(node, 'name')
         class_name = self._get_node_text(name_node) if name_node else 'Unknown'
-        
+
         # Extract modifiers
         modifiers = self._extract_modifiers(node)
-        
-        # Extract base classes/interfaces
-        base_classes = self._extract_base_list(node)
-        
-        # Create class info
+
+        # Check if class is partial
+        is_partial = 'partial' in modifiers
+
+        # Extract base class and interfaces
+        base_class, interfaces = self._extract_base_and_interfaces(node)
+
+        # Create class info with new fields
         class_info = ClassInfo(
             name=class_name,
             namespace=namespace,
             modifiers=modifiers,
-            base_classes=base_classes,
-            line_number=node.start_point[0] + 1
+            base_class=base_class,
+            interfaces=interfaces,
+            line_number=node.start_point[0] + 1,
+            is_partial=is_partial,
+            is_nested=is_nested
         )
-        
+
         # Parse the class body
         body_node = self._find_child_by_field(node, 'body')
         if body_node:
             self._parse_class_body(body_node, class_info)
-        
+
         return class_info
     
     def _parse_class_body(self, body_node: Node, class_info: ClassInfo):
-        """Parse the body of a class to extract attributes and methods."""
+        """Parse the body of a class to extract attributes, properties, and methods."""
         for child in body_node.children:
             if child.type == 'field_declaration':
+                # Parse fields (attributes)
                 attributes = self._parse_field(child)
                 class_info.attributes.extend(attributes)
             elif child.type == 'property_declaration':
-                attribute = self._parse_property(child)
-                if attribute:
-                    class_info.attributes.append(attribute)
+                # Parse properties (separate from attributes)
+                property_info = self._parse_property(child)
+                if property_info:
+                    class_info.properties.append(property_info)
             elif child.type == 'method_declaration':
                 method = self._parse_method(child)
                 if method:
@@ -189,32 +245,43 @@ class CSharpStructureParser:
                         name=self._get_node_text(name_node),
                         type=field_type,
                         modifiers=modifiers,
-                        line_number=node.start_point[0] + 1,
-                        is_property=False
+                        line_number=node.start_point[0] + 1
                     )
                     attributes.append(attribute)
-        
+
         return attributes
-    
-    def _parse_property(self, node: Node) -> Optional[AttributeInfo]:
-        """Parse a property declaration."""
+
+    def _parse_property(self, node: Node) -> Optional[PropertyInfo]:
+        """Parse a property declaration and return PropertyInfo."""
         modifiers = self._extract_modifiers(node)
-        
+
         # Get type
         type_node = self._find_child_by_field(node, 'type')
         prop_type = self._get_node_text(type_node) if type_node else 'unknown'
-        
+
         # Get name
         name_node = self._find_child_by_field(node, 'name')
         if not name_node:
             return None
-        
-        return AttributeInfo(
+
+        # Detect getter/setter
+        has_getter = False
+        has_setter = False
+        accessor_list = self._find_child_by_field(node, 'accessors')
+        if accessor_list:
+            for child in accessor_list.children:
+                if child.type == 'get_accessor_declaration':
+                    has_getter = True
+                elif child.type == 'set_accessor_declaration':
+                    has_setter = True
+
+        return PropertyInfo(
             name=self._get_node_text(name_node),
             type=prop_type,
             modifiers=modifiers,
             line_number=node.start_point[0] + 1,
-            is_property=True
+            has_getter=has_getter if accessor_list else True,  # Auto-property if no accessor list
+            has_setter=has_setter if accessor_list else True
         )
     
     def _parse_method(self, node: Node) -> Optional[MethodInfo]:
@@ -270,29 +337,53 @@ class CSharpStructureParser:
     def _extract_modifiers(self, node: Node) -> List[str]:
         """Extract access modifiers and other modifiers from a declaration."""
         modifiers = []
-        modifier_types = ['public', 'private', 'protected', 'internal', 'static', 
-                         'virtual', 'override', 'abstract', 'sealed', 'readonly', 
-                         'const', 'async', 'extern', 'partial']
-        
+
         for child in node.children:
-            if child.type in modifier_types:
-                modifiers.append(child.type)
-        
+            # In tree-sitter-c-sharp, modifiers are wrapped in 'modifier' nodes
+            if child.type == 'modifier':
+                # The actual modifier is the first child of the modifier node
+                if child.children:
+                    modifier_name = child.children[0].type
+                    modifiers.append(modifier_name)
+
         return modifiers
     
-    def _extract_base_list(self, node: Node) -> List[str]:
-        """Extract base classes and interfaces."""
-        base_classes = []
-        base_list_node = self._find_child_by_field(node, 'bases')
-        
+    def _extract_base_and_interfaces(self, node: Node) -> tuple[Optional[str], List[str]]:
+        """
+        Extract base class and interfaces separately.
+
+        In C#, a class can inherit from one base class and multiple interfaces.
+        By convention, interfaces start with 'I'. This method uses that heuristic
+        to separate the base class from interfaces.
+
+        Returns:
+            Tuple of (base_class, interfaces)
+        """
+        base_class = None
+        interfaces = []
+
+        # Find base_list node by type (not by field name)
+        base_list_node = self._find_child_by_type(node, 'base_list')
+
         if base_list_node:
+            base_items = []
+            # In tree-sitter-c-sharp, base list contains identifier nodes directly
             for child in base_list_node.children:
-                if child.type == 'base_type':
-                    type_node = self._find_child_by_field(child, 'type')
-                    if type_node:
-                        base_classes.append(self._get_node_text(type_node))
-        
-        return base_classes
+                if child.type == 'identifier':
+                    base_items.append(self._get_node_text(child))
+
+            if base_items:
+                # First item is base class if it doesn't look like an interface
+                first_item = base_items[0]
+                if first_item.startswith('I') and len(first_item) > 1 and first_item[1].isupper():
+                    # Looks like an interface (e.g., IDisposable, IEnumerable)
+                    interfaces = base_items
+                else:
+                    # Likely a base class
+                    base_class = first_item
+                    interfaces = base_items[1:]  # Rest are interfaces
+
+        return base_class, interfaces
     
     def _extract_parameters(self, node: Node) -> List[str]:
         """Extract method parameters."""
@@ -339,27 +430,54 @@ class CSharpStructureParser:
 def print_class_tree(class_info: ClassInfo, indent: int = 0):
     """
     Pretty print a class structure as a tree.
-    
+
     Args:
         class_info: The class to print
         indent: Current indentation level
     """
     prefix = "  " * indent
     modifiers_str = " ".join(class_info.modifiers)
-    base_str = f" : {', '.join(class_info.base_classes)}" if class_info.base_classes else ""
-    
-    print(f"{prefix}Class: {modifiers_str} {class_info.name}{base_str} (line {class_info.line_number})")
-    
+
+    # Build inheritance string
+    inheritance_parts = []
+    if class_info.base_class:
+        inheritance_parts.append(class_info.base_class)
+    inheritance_parts.extend(class_info.interfaces)
+    base_str = f" : {', '.join(inheritance_parts)}" if inheritance_parts else ""
+
+    # Add markers for partial and nested
+    markers = []
+    if class_info.is_partial:
+        markers.append("partial")
+    if class_info.is_nested:
+        markers.append("nested")
+    marker_str = f" [{', '.join(markers)}]" if markers else ""
+
+    print(f"{prefix}Class: {modifiers_str} {class_info.name}{base_str}{marker_str} (line {class_info.line_number})")
+
     if class_info.namespace:
         print(f"{prefix}  Namespace: {class_info.namespace}")
-    
+
+    # Print fields (attributes)
     if class_info.attributes:
-        print(f"{prefix}  Attributes:")
+        print(f"{prefix}  Fields:")
         for attr in class_info.attributes:
-            attr_type = "Property" if attr.is_property else "Field"
             mods = " ".join(attr.modifiers) if attr.modifiers else "default"
-            print(f"{prefix}    [{attr_type}] {mods} {attr.type} {attr.name} (line {attr.line_number})")
-    
+            print(f"{prefix}    {mods} {attr.type} {attr.name} (line {attr.line_number})")
+
+    # Print properties
+    if class_info.properties:
+        print(f"{prefix}  Properties:")
+        for prop in class_info.properties:
+            mods = " ".join(prop.modifiers) if prop.modifiers else "default"
+            accessors = []
+            if prop.has_getter:
+                accessors.append("get")
+            if prop.has_setter:
+                accessors.append("set")
+            accessor_str = f" {{ {'; '.join(accessors)}; }}" if accessors else ""
+            print(f"{prefix}    {mods} {prop.type} {prop.name}{accessor_str} (line {prop.line_number})")
+
     if class_info.methods:
         print(f"{prefix}  Methods:")
         for method in class_info.methods:
@@ -368,7 +486,7 @@ def print_class_tree(class_info: ClassInfo, indent: int = 0):
             method_type = "Constructor" if method.is_constructor else "Method"
             ret_type = "" if method.is_constructor else f"{method.return_type} "
             print(f"{prefix}    [{method_type}] {mods} {ret_type}{method.name}({params}) (line {method.line_number})")
-    
+
     if class_info.nested_classes:
         print(f"{prefix}  Nested Classes:")
         for nested in class_info.nested_classes:
@@ -378,42 +496,15 @@ def print_class_tree(class_info: ClassInfo, indent: int = 0):
 def class_to_dict(class_info: ClassInfo) -> Dict[str, Any]:
     """
     Convert a ClassInfo object to a dictionary for JSON serialization.
-    
+
     Args:
         class_info: The class to convert
-        
+
     Returns:
         Dictionary representation of the class structure
     """
-    return {
-        "name": class_info.name,
-        "namespace": class_info.namespace,
-        "modifiers": class_info.modifiers,
-        "base_classes": class_info.base_classes,
-        "line_number": class_info.line_number,
-        "attributes": [
-            {
-                "name": attr.name,
-                "type": attr.type,
-                "modifiers": attr.modifiers,
-                "line_number": attr.line_number,
-                "is_property": attr.is_property
-            }
-            for attr in class_info.attributes
-        ],
-        "methods": [
-            {
-                "name": method.name,
-                "return_type": method.return_type,
-                "parameters": method.parameters,
-                "modifiers": method.modifiers,
-                "line_number": method.line_number,
-                "is_constructor": method.is_constructor
-            }
-            for method in class_info.methods
-        ],
-        "nested_classes": [class_to_dict(nested) for nested in class_info.nested_classes]
-    }
+    # Pydantic provides model_dump() method for serialization
+    return class_info.model_dump()
 
 
 def main():
@@ -448,17 +539,17 @@ def main():
             # Check if it's a file or directory
             if path_obj.is_file():
                 # Single file mode
-                classes = parser.parse_file(str(path_obj))
-                
-                if not classes:
+                snapshot = parser.parse_file(str(path_obj))
+
+                if not snapshot.classes:
                     click.echo("No classes found in the file.", err=True)
                     sys.exit(1)
-                
+
                 if use_json:
-                    # Output as JSON
-                    output = [class_to_dict(class_info) for class_info in classes]
+                    # Output as JSON using Pydantic's model_dump
+                    output = snapshot.model_dump()
                     json_str = json_lib.dumps(output, indent=2)
-                    
+
                     if out_file:
                         with open(out_file, 'w', encoding='utf-8') as f:
                             f.write(json_str)
@@ -471,8 +562,8 @@ def main():
                     click.echo(f"C# Structure Analysis: {path}")
                     click.echo("=" * 80)
                     click.echo()
-                    
-                    for class_info in classes:
+
+                    for class_info in snapshot.classes:
                         print_class_tree(class_info)
                         click.echo()
             
@@ -496,12 +587,12 @@ def main():
                 
                 for cs_file in cs_files:
                     try:
-                        classes = parser.parse_file(str(cs_file))
-                        if classes:
+                        snapshot = parser.parse_file(str(cs_file))
+                        if snapshot.classes:
                             # Store relative path as key
                             relative_path = str(cs_file.relative_to(path_obj))
-                            results[relative_path] = [class_to_dict(c) for c in classes]
-                            total_classes += len(classes)
+                            results[relative_path] = snapshot.model_dump()
+                            total_classes += len(snapshot.classes)
                     except Exception as e:
                         errors.append({
                             "file": str(cs_file.relative_to(path_obj)),

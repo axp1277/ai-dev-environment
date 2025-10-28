@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from loguru import logger
 
 from ..state import GraphConfig
-from ..core import create_chat_model
+from docugen.shared.core import create_chat_model
 
 
 class DocumentationOutput(BaseModel):

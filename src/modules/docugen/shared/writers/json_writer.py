@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Dict
 from loguru import logger
 
-from ..state import FileState
+from ...workflows.llm_first.state import FileState
 
 
 def save_layer_outputs(results: Dict[Path, FileState], output_dir: Path) -> Dict[str, Path]:

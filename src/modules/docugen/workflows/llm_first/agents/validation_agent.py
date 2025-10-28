@@ -27,7 +27,7 @@ from ..state import (
     RelationshipMap,
     GraphConfig
 )
-from ..core import create_chat_model
+from docugen.shared.core import create_chat_model
 
 
 class ValidationAgent:

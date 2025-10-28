@@ -14,19 +14,19 @@ from loguru import logger
 from rich.console import Console
 from rich.panel import Panel
 
-from .core import (
+from .shared.core import (
     validate_config_path,
     validate_input_path,
     verify_ollama_running,
     DocuGenConfig,
 )
-from .agents.file_summarizer_agent import FileSummarizerAgent
-from .agents.detailing_agent import DetailingAgent
-from .agents.relationship_mapper_agent import RelationshipMapperAgent
-from .agents.documentation_agent import DocumentationAgent
-from .state import FileState, GraphConfig, FileSummary
-from .orchestrator import create_orchestrator
-from .writers import save_layer_outputs
+from .workflows.llm_first.agents.file_summarizer_agent import FileSummarizerAgent
+from .workflows.llm_first.agents.detailing_agent import DetailingAgent
+from .workflows.llm_first.agents.relationship_mapper_agent import RelationshipMapperAgent
+from .workflows.llm_first.agents.documentation_agent import DocumentationAgent
+from .workflows.llm_first.state import FileState, GraphConfig, FileSummary
+from .workflows.llm_first.orchestrator import create_orchestrator
+from .shared.writers import save_layer_outputs
 
 console = Console()
 

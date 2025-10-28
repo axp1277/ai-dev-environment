@@ -1,39 +1,39 @@
 """
-File Summarizer Agent - Layer 1
+Detailing Agent - Layer 2
 
-Generates high-level summaries of C# files by directly analyzing source code
-and inferring structure, purpose, and key classes.
+Generates detailed function/class documentation with docstrings,
+parameter descriptions, and return type analysis.
 
 Four Pillars:
-1. Model: Ollama LLM (configurable, default: codellama:7b)
-2. Prompt: External markdown file (prompts/file_summarizer.md)
-3. Context: File content and metadata
+1. Model: Ollama LLM (configurable, default: codellama:13b)
+2. Prompt: External markdown file (prompts/detailing_agent.md)
+3. Context: File content + Layer 1 summary
 4. Tools: None (LLM analyzes code directly)
 """
 
 from pathlib import Path
 from loguru import logger
 
-from ..state import FileState, FileSummary, GraphConfig
-from ..core import create_chat_model
+from ..state import FileState, DetailedDocs, GraphConfig
+from docugen.shared.core import create_chat_model
 
 
-class FileSummarizerAgent:
+class DetailingAgent:
     """
-    Layer 1 Agent: Analyzes C# files and generates high-level summaries.
+    Layer 2 Agent: Generates detailed documentation for classes and methods.
 
-    Simple, focused responsibility: Take file content, return structured summary.
+    Simple, focused responsibility: Take file + summary, return detailed docs.
     """
 
     def __init__(self, config: GraphConfig):
         """
-        Initialize the File Summarizer Agent.
+        Initialize the Detailing Agent.
 
         Args:
             config: Graph configuration containing model name and prompt path
         """
-        self.model_name = config.summarizer_model
-        self.prompt_path = config.summarizer_prompt_path
+        self.model_name = config.detailing_model
+        self.prompt_path = config.detailing_prompt_path
         self.system_prompt = self._load_prompt()
 
         # Create LangChain chat model with structured output support
@@ -44,11 +44,11 @@ class FileSummarizerAgent:
             config.llm_timeout
         )
 
-        # Configure model to output structured FileSummary
-        self.model = base_model.with_structured_output(FileSummary)
+        # Configure model to output structured DetailedDocs
+        self.model = base_model.with_structured_output(DetailedDocs)
 
         logger.info(
-            f"FileSummarizerAgent initialized",
+            f"DetailingAgent initialized",
             model=self.model_name,
             prompt=str(self.prompt_path),
             base_url=config.llm_base_url
@@ -70,48 +70,49 @@ class FileSummarizerAgent:
 
     def invoke(self, state: FileState) -> FileState:
         """
-        Execute the File Summarizer Agent.
+        Execute the Detailing Agent.
 
         Args:
-            state: Current file state containing file_path and file_content
+            state: Current file state with file_content and layer1_summary
 
         Returns:
-            Updated state with layer1_summary populated
+            Updated state with layer2_details populated
         """
-        logger.info(f"FileSummarizerAgent invoked", file=str(state.file_path))
+        logger.info(f"DetailingAgent invoked", file=str(state.file_path))
 
         try:
             # Prepare context for LLM
             user_message = self._prepare_context(state)
 
-            # Call LangChain model with structured output (returns FileSummary directly)
+            # Call LangChain model with structured output (returns DetailedDocs directly)
             from langchain_core.messages import SystemMessage, HumanMessage
 
-            summary = self.model.invoke([
+            details = self.model.invoke([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=user_message)
             ])
 
             # Update state
-            state.layer1_summary = summary
-            state.layer1_iterations += 1
+            state.layer2_details = details
+            state.layer2_iterations += 1
 
             logger.success(
-                f"FileSummarizerAgent completed",
+                f"DetailingAgent completed",
                 file=str(state.file_path),
-                summary_length=len(summary.summary)
+                classes=len(details.classes),
+                methods=len(details.standalone_methods)
             )
 
             return state
 
         except Exception as e:
-            logger.exception(f"FileSummarizerAgent failed: {e}")
-            state.error_message = f"Layer 1 failed: {str(e)}"
+            logger.exception(f"DetailingAgent failed: {e}")
+            state.error_message = f"Layer 2 failed: {str(e)}"
             return state
 
     def _prepare_context(self, state: FileState) -> str:
         """
-        Prepare the user message with file content and metadata.
+        Prepare the user message with file content, Layer 1 summary, and metadata.
 
         Args:
             state: Current file state
@@ -119,32 +120,45 @@ class FileSummarizerAgent:
         Returns:
             Formatted message for the LLM
         """
-        return f"""Analyze this C# file and generate a high-level summary.
+        summary_context = ""
+        if state.layer1_summary:
+            summary_context = f"""
+**Layer 1 Summary:**
+- Purpose: {state.layer1_summary.purpose}
+- Category: {state.layer1_summary.category}
+- Key Classes: {', '.join(state.layer1_summary.key_classes)}
+- Summary: {state.layer1_summary.summary}
+"""
+
+        return f"""Generate detailed documentation for this C# file.
 
 **File:** {state.file_path.name}
 **Full Path:** {str(state.file_path)}
+
+{summary_context}
 
 **Code:**
 ```csharp
 {state.file_content}
 ```
 
+Provide comprehensive docstrings for all classes and public methods.
 Respond with valid JSON matching the required schema.
 """
 
 
 
 # Node function for LangGraph
-def summarize_file(state: FileState, config: GraphConfig) -> FileState:
+def generate_details(state: FileState, config: GraphConfig) -> FileState:
     """
-    LangGraph node function for file summarization.
+    LangGraph node function for detailed documentation.
 
     Args:
         state: Current file state
         config: Graph configuration
 
     Returns:
-        Updated state with layer1_summary
+        Updated state with layer2_details
     """
-    agent = FileSummarizerAgent(config)
+    agent = DetailingAgent(config)
     return agent.invoke(state)
