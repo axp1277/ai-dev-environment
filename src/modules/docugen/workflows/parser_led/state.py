@@ -23,7 +23,8 @@ class ParserLedConfig(BaseModel):
     llm_api_key_env: Optional[str] = None  # Environment variable name for API key
     llm_timeout: int = 300
 
-    output_format: str = "markdown"
+    # Output configuration
+    output_format: str = "hierarchical"  # "hierarchical" or "markdown"
 
     class Config:
         """Pydantic configuration."""

@@ -16,6 +16,7 @@ from datetime import datetime
 from loguru import logger
 
 from ..state import ParserLedState
+from ..formatters.hierarchical_formatter import generate_hierarchical_documentation
 from ..formatters.markdown_formatter import (
     format_file_documentation,
     generate_table_of_contents,
@@ -57,46 +58,73 @@ def compiler_agent_node(state: ParserLedState, output_path: str = None) -> Parse
     # Generate timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Build complete documentation
-    markdown_content = []
+    # Check output format from config
+    output_format = state.config.output_format if state.config else "hierarchical"
 
-    # Header
-    markdown_content.append(f"# Code Documentation")
-    markdown_content.append("")
-    markdown_content.append(f"**Generated:** {timestamp}")
-    markdown_content.append(f"**Source Directory:** `{state.directory_path}`")
-    markdown_content.append("")
-    markdown_content.append("---")
-    markdown_content.append("")
+    # Build complete documentation based on format
+    if output_format == "hierarchical":
+        # Use hierarchical numbered format
+        content = []
 
-    # Summary metrics
-    if state.validation_results:
-        markdown_content.append(generate_summary_metrics(state.validation_results))
+        # Header
+        content.append("=" * 80)
+        content.append("CODE DOCUMENTATION")
+        content.append("=" * 80)
+        content.append(f"Generated: {timestamp}")
+        content.append(f"Source Directory: {state.directory_path}")
+        content.append("")
+
+        # Generate hierarchical documentation
+        hierarchical_doc = generate_hierarchical_documentation(
+            documented_files=state.documented_files,
+            structure_snapshots=state.structure_snapshots,
+            validation_results=state.validation_results,
+            base_number="5"
+        )
+        content.append(hierarchical_doc)
+
+        full_markdown = "\n".join(content)
+    else:
+        # Use original markdown format
+        markdown_content = []
+
+        # Header
+        markdown_content.append(f"# Code Documentation")
+        markdown_content.append("")
+        markdown_content.append(f"**Generated:** {timestamp}")
+        markdown_content.append(f"**Source Directory:** `{state.directory_path}`")
+        markdown_content.append("")
         markdown_content.append("---")
         markdown_content.append("")
 
-    # Table of contents
-    markdown_content.append(generate_table_of_contents(state.documented_files))
-    markdown_content.append("---")
-    markdown_content.append("")
+        # Summary metrics
+        if state.validation_results:
+            markdown_content.append(generate_summary_metrics(state.validation_results))
+            markdown_content.append("---")
+            markdown_content.append("")
 
-    # Individual file documentation
-    markdown_content.append("# Detailed Documentation")
-    markdown_content.append("")
-
-    for file_path in sorted(state.documented_files.keys()):
-        file_doc = state.documented_files[file_path]
-        validation_result = state.validation_results.get(file_path)
-
-        # Add file documentation
-        file_markdown = format_file_documentation(file_doc, validation_result)
-        markdown_content.append(file_markdown)
-        markdown_content.append("")
+        # Table of contents
+        markdown_content.append(generate_table_of_contents(state.documented_files))
         markdown_content.append("---")
         markdown_content.append("")
 
-    # Combine all content
-    full_markdown = "\n".join(markdown_content)
+        # Individual file documentation
+        markdown_content.append("# Detailed Documentation")
+        markdown_content.append("")
+
+        for file_path in sorted(state.documented_files.keys()):
+            file_doc = state.documented_files[file_path]
+            validation_result = state.validation_results.get(file_path)
+
+            # Add file documentation
+            file_markdown = format_file_documentation(file_doc, validation_result)
+            markdown_content.append(file_markdown)
+            markdown_content.append("")
+            markdown_content.append("---")
+            markdown_content.append("")
+
+        # Combine all content
+        full_markdown = "\n".join(markdown_content)
 
     # Write to file
     output_file = output_dir / "documentation.md"

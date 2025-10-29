@@ -38,6 +38,7 @@ from rich.panel import Panel
 
 from .state import ParserLedConfig
 from .workflow import run_parser_led_workflow
+from ...shared.core import DocuGenConfig, validate_config_path
 
 
 def setup_logging(verbose: bool = False):
@@ -123,6 +124,13 @@ def main():
     )
 
     parser.add_argument(
+        "-c", "--config",
+        type=str,
+        default="config.yaml",
+        help="Path to configuration YAML file (default: config.yaml)"
+    )
+
+    parser.add_argument(
         "-o", "--output",
         type=str,
         default=None,
@@ -144,22 +152,30 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="mistral-nemo:latest",
-        help="LLM model to use (default: mistral-nemo:latest)"
+        default=None,
+        help="LLM model to use (overrides config.yaml, default: uses documentation model from config)"
     )
 
     parser.add_argument(
         "--max-iterations",
         type=int,
-        default=3,
-        help="Maximum validation iterations per file (default: 3)"
+        default=None,
+        help="Maximum validation iterations per file (overrides config.yaml)"
     )
 
     parser.add_argument(
         "--llm-base-url",
         type=str,
-        default="http://localhost:11434/v1",
-        help="LLM base URL (default: http://localhost:11434/v1 for Ollama)"
+        default=None,
+        help="LLM base URL (overrides config.yaml)"
+    )
+
+    parser.add_argument(
+        "--format",
+        type=str,
+        choices=["hierarchical", "markdown"],
+        default="hierarchical",
+        help="Output format (default: hierarchical)"
     )
 
     parser.add_argument(
@@ -183,23 +199,54 @@ def main():
         logger.error(f"Path is not a directory: {args.directory}")
         sys.exit(1)
 
-    # Create configuration
-    config = ParserLedConfig(
-        include_private_members=args.private if args.private else not args.no_private,
-        max_validation_iterations=args.max_iterations,
-        llm_model=args.model,
-        llm_base_url=args.llm_base_url
-    )
+    # Load configuration from YAML if provided
+    doc_config = None
+    config_path = Path(args.config)
+
+    if config_path.exists():
+        try:
+            logger.info(f"Loading configuration from {config_path}")
+            doc_config = DocuGenConfig.from_yaml(config_path)
+        except Exception as e:
+            logger.error(f"Failed to load configuration: {e}")
+            sys.exit(1)
+    else:
+        logger.warning(f"Configuration file not found: {config_path}, using CLI arguments only")
+
+    # Create ParserLedConfig with config.yaml defaults and CLI overrides
+    if doc_config:
+        config = ParserLedConfig(
+            include_private_members=args.private if args.private else not args.no_private,
+            max_validation_iterations=args.max_iterations if args.max_iterations is not None else doc_config.validation.max_iterations,
+            llm_base_url=args.llm_base_url if args.llm_base_url else doc_config.llm.base_url,
+            llm_model=args.model if args.model else doc_config.models.documentation,
+            llm_api_key_env=doc_config.llm.api_key_env,
+            llm_timeout=doc_config.llm.timeout,
+            output_format=args.format
+        )
+    else:
+        # Fallback to CLI arguments only
+        config = ParserLedConfig(
+            include_private_members=args.private if args.private else not args.no_private,
+            max_validation_iterations=args.max_iterations if args.max_iterations is not None else 3,
+            llm_model=args.model if args.model else "mistral-nemo:latest",
+            llm_base_url=args.llm_base_url if args.llm_base_url else "http://localhost:11434/v1",
+            output_format=args.format
+        )
 
     # Create console for rich output
     console = Console()
 
     # Display configuration
+    config_source = "config.yaml" if doc_config else "CLI arguments only"
     console.print(Panel.fit(
         f"[bold cyan]Parser-Led Documentation Workflow[/bold cyan]\n\n"
+        f"Config Source: [yellow]{config_source}[/yellow]\n"
         f"Directory: [yellow]{args.directory}[/yellow]\n"
         f"Output: [yellow]{args.output or '<directory>/documentation'}[/yellow]\n"
-        f"Model: [yellow]{args.model}[/yellow]\n"
+        f"Format: [yellow]{config.output_format}[/yellow]\n"
+        f"Model: [yellow]{config.llm_model}[/yellow]\n"
+        f"Base URL: [yellow]{config.llm_base_url}[/yellow]\n"
         f"Private Members: [yellow]{config.include_private_members}[/yellow]\n"
         f"Max Iterations: [yellow]{config.max_validation_iterations}[/yellow]",
         title="Configuration"
