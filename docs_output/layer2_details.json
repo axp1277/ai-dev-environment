@@ -1,0 +1,152 @@
+[
+  {
+    "file": "/tmp/docugen_test/WorkerPool.cs",
+    "classes": [
+      {
+        "name": "WorkerPool",
+        "description": "Manages background task execution across multiple workers using a BlockingCollection for task enqueuing and a CancellationTokenSource for graceful shutdown.",
+        "methods": [
+          {
+            "name": "WorkerPool",
+            "signature": "public WorkerPool(int workerCount)",
+            "description": "Initializes the worker pool with the specified number of worker threads. These threads continuously consume tasks from the internal queue and execute them asynchronously.",
+            "parameters": [
+              "workerCount: The number of worker threads to create for processing tasks"
+            ],
+            "returns": "None (constructor method)"
+          },
+          {
+            "name": "EnqueueTask",
+            "signature": "public void EnqueueTask(Func<Task> task)",
+            "description": "Adds a new task to the internal queue for execution by the worker threads.",
+            "parameters": [
+              "task: A function that returns a Task, representing the work to be performed"
+            ],
+            "returns": "None"
+          },
+          {
+            "name": "Stop",
+            "signature": "public void Stop()",
+            "description": "Initiates the shutdown process for the worker pool. It cancels the CancellationTokenSource, signaling workers to stop processing tasks and completes adding to the task queue.",
+            "parameters": [],
+            "returns": "None"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "/tmp/docugen_test/OllamaService.cs",
+    "classes": [
+      {
+        "name": "OllamaService",
+        "description": "This service handles API requests to the Ollama API, providing asynchronous methods for fetching data from the local server.",
+        "methods": [
+          {
+            "name": "GetAsync",
+            "signature": "public async Task<string> GetAsync(string url, Dictionary<string, string> req)",
+            "description": "Sends an HTTP GET request to the specified URL on the Ollama API, including optional query parameters in the provided dictionary. Returns the response content as a string.",
+            "parameters": [
+              "url: The path component of the API endpoint",
+              "req: Optional query parameters as key-value pairs"
+            ],
+            "returns": "The response content from the API as a string"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "/tmp/docugen_test/MarkdownExtractor.cs",
+    "classes": [
+      {
+        "name": "MarkdownExtractor",
+        "description": "[Obsolete] Extracts and serializes code blocks from markdown files into JSON format.",
+        "methods": [
+          {
+            "name": "ExtractCodeBlocks",
+            "signature": "public IEnumerable<string> ExtractCodeBlocks()",
+            "description": "Identifies and serializes code blocks with syntax highlighting from markdown files located in the specified input directory. Returns each serialized code block as a JSON string.",
+            "parameters": [],
+            "returns": "An enumerable collection of strings, each representing a serialized code block in JSON format."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "/tmp/docugen_test/HttpService.cs",
+    "classes": [
+      {
+        "name": "HttpService",
+        "description": "This class handles asynchronous HTTP requests, providing methods for GET and POST operations to interact with external APIs. It uses an `HttpClient` instance to perform network communication.",
+        "methods": [
+          {
+            "name": "GetAsync",
+            "signature": "public Task<string> GetAsync(string url)",
+            "description": "Initiates an asynchronous HTTP GET request to the specified URL and returns the response content as a string.",
+            "parameters": [
+              "url: The target URL for the GET request"
+            ],
+            "returns": "The response content from the server as a string, or null if an error occurs"
+          },
+          {
+            "name": "PostAsync",
+            "signature": "public Task<string> PostAsync(string url, HttpContent content)",
+            "description": "Initiates an asynchronous HTTP POST request to the specified URL with the provided content and returns the response content as a string.",
+            "parameters": [
+              "url: The target URL for the POST request",
+              "content: The content to be sent in the POST body"
+            ],
+            "returns": "The response content from the server as a string, or null if an error occurs"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "/tmp/docugen_test/FlattenAllService.cs",
+    "classes": [
+      {
+        "name": "FlattenAllService",
+        "description": "Orchestrates the flattening of code artifacts, managing the process from directory scanning to output generation and error handling.",
+        "methods": [
+          {
+            "name": "FlattenAllAsync",
+            "signature": "public async Task FlattenAllAsync()",
+            "description": "Initiates the Flatten-All process, which flattens code artifacts within Git repositories located in specified directories and generates Markdown output.",
+            "parameters": [],
+            "returns": "None (void method)\n\nLogs progress, success, and failure details during execution. Throws exceptions if errors occur during processing or file operations."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "/tmp/docugen_test/ChromaDbService.cs",
+    "classes": [
+      {
+        "name": "ChromaDbService",
+        "description": "Handles content item upsert operations by sending JSON data to a local ChromaDB instance. Provides asynchronous methods for adding and retrieving content items with metadata.",
+        "methods": [
+          {
+            "name": "UpsertAsync",
+            "signature": "public async Task UpsertAsync(ContentItem contentItem)",
+            "description": "Asynchronously inserts or updates a content item in the ChromaDB system. Converts the provided ContentItem object into the required format and sends it to the specified ChromaDB URL.",
+            "parameters": [
+              "contentItem: The ContentItem object containing details of the content item to be upserted.",
+              "id: Unique identifier for the content item."
+            ],
+            "returns": "None (void task)"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  }
+]

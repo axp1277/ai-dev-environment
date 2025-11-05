@@ -1,0 +1,1513 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IInputSource.cs",
+    "architectural_role": "Abstraction Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IInputSource.cs",
+        "classes_used": [
+          "IInputSource"
+        ],
+        "purpose": "This file uses the IInputSource interface to define the contract for input source operations",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IInputSource.cs",
+        "how_used": "This file is used by other classes to implement the input source operations"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IRenderer.cs",
+    "architectural_role": "Abstraction Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IRenderer.cs",
+        "classes_used": [
+          "IRenderer"
+        ],
+        "purpose": "This file uses the ContentItem type to define the contract for rendering content items into strings",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IRenderer.cs",
+        "how_used": "This file is used by other classes to implement the rendering logic"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IContentExtractor.cs",
+    "architectural_role": "Abstraction",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IContentExtractor.cs",
+        "classes_used": [
+          "IContentExtractor"
+        ],
+        "purpose": "This file is an abstraction for content extraction functionality, providing methods to check if content can be extracted and to extract it.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/ContentItem.cs",
+        "how_used": "Provides the ContentItem class that is used by IContentExtractor to represent extracted content."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/ITemplateRenderer.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/ITemplateRenderer.cs",
+        "classes_used": [
+          "ITemplateRenderer"
+        ],
+        "purpose": "This file provides the interface for template rendering, which is used by other components to render content.",
+        "relationship_type": "Interface"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/ITemplateRenderer.cs",
+        "how_used": "This file is used by other components to implement the template rendering functionality."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+        "classes_used": [
+          "BlockingCollection",
+          "CancellationTokenSource",
+          "Func<Task>"
+        ],
+        "purpose": "This class uses these types to manage concurrent task processing and synchronization",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+        "how_used": "Invoked to enqueue tasks for processing"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClientClient.cs",
+        "classes_used": [
+          "HttpClient"
+        ],
+        "purpose": "This file uses the HttpClient instance to perform HTTP requests",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+        "classes_used": [
+          "HttpContent"
+        ],
+        "purpose": "This file uses HttpContent for POST requests",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClientClient.cs",
+        "how_used": "Consumes the HttpClient instance to perform HTTP requests"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+        "how_used": "Provides HTTP services for other files to use"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/FlattenAllService.cs",
+    "architectural_role": "{\"pattern\": \"Service Layer\", \"description\": \"Implements business logic for flattening code files across directories, coordinating between input processors, renderers, and external tools\"}",
+    "dependencies": [
+      {
+        "file": "RepoScribe.Core.Abstractions/FlattenAllService.cs",
+        "classes_used": [
+          "IInputProcessor",
+          "IRenderer"
+        ],
+        "purpose": "Provides access to the code flattening operations",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "RepoScribe.Core.Helpers/PathUtility.cs",
+        "classes_used": [
+          "PathUtility"
+        ],
+        "purpose": "Provides utility methods for file path manipulation",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "RepoScribe.Core.Utilities/DirectoryInfo.cs",
+        "classes_used": [
+          "DirectoryInfo"
+        ],
+        "purpose": "Provides information about directories and files",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "RepoScribe.Core.Services/FlattenAllService.cs",
+        "how_used": "Invoked to process directories and flatten code files",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "RepoScribe.Core.Services/FlattenAllService.cs",
+        "how_used": "Used to generate output files for each processed directory",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "RepoScribe.Core.Services/FlattenAllService.cs",
+        "how_used": "Used to log progress and errors during the flattening process",
+        "relationship_type": "Usage"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OllamaService.cs",
+    "architectural_role": "Service Layer - Business Logic for API Interaction",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClientHandler.cs",
+        "classes_used": [
+          "HttpClientHandler"
+        ],
+        "purpose": "Provides HTTP client handling for the OllamaService",
+        "relationship_type": "Dependency Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClient.cs",
+        "classes_used": [
+          "HttpClient"
+        ],
+        "purpose": "Provides HTTP client functionality for the OllamaService",
+        "relationship_type": "Dependency Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OllamaController.cs",
+        "how_used": "Invokes OllamaService to fetch data from the Ollama API"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OllamaService.cs",
+        "how_used": "Used by OllamaService to perform API calls"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+    "architectural_role": "Service Layer, Repository Pattern, and Data Access Layer Integration",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Implementation of local database service for development and production environments",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "how_used": "Invoked to process order creation, updates, and queries",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "how_used": "Called to perform CRUD operations on orders",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "how_used": "Used to test a connection to the database",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "how_used": "Used to open a connection to the database",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+        "how_used": "Used to initialize the database",
+        "relationship_type": "Usage"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/MarkdownExtractor.cs",
+    "architectural_role": "Service Layer - Business Logic for Code Block Conversion and JSON Generation",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/HashUtility.cs",
+        "classes_used": [
+          "HashUtility"
+        ],
+        "purpose": "Provides utility functions for generating unique IDs",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/PathUtility.cs",
+        "classes_used": [
+          "PathUtility"
+        ],
+        "purpose": "Provides utility functions for file path manipulation",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/CodeBlockConverter.cs",
+        "how_used": "Converts markdown code blocks to JSON format"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/CodeBlockProcessor.cs",
+        "how_used": "Processes markdown code blocks for extraction and conversion"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ChromaDbService.cs",
+    "architectural_role": "{\"pattern\": \"Service Layer\",\"description\": \"Implements business logic for inserting content items into ChromaDB\"}",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ContentItemService.cs",
+        "classes_used": [
+          "ContentItem"
+        ],
+        "purpose": "This service depends on content items to perform operations",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ChromaDbService.cs",
+        "classes_used": [
+          "ContentItem"
+        ],
+        "purpose": "This file uses ContentItem to convert to ChromaDB format",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClientService.cs",
+        "classes_used": [
+          "HttpClient"
+        ],
+        "purpose": "This file uses HttpClient to make requests",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ChromaDbService.cs",
+        "classes_used": [
+          "HttpContent"
+        ],
+        "purpose": "This file uses HttpContent to send requests",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ContentItemService.cs",
+        "how_used": "Invoked to perform operations on content items"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpClientService.cs",
+        "how_used": "Used to make requests to ChromaDB"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfFileHandler.cs",
+    "architectural_role": "{\"pattern\": \"Service Layer\", \"description\": \"Handles business logic for PDF file processing and metadata extraction\"}",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfReader.cs",
+        "classes_used": [
+          "PdfReader"
+        ],
+        "purpose": "Provides PDF document reading functionality",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfPage.cs",
+        "classes_used": [
+          "PdfPage"
+        ],
+        "purpose": "Represents a single page in a PDF document",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfFileHandler.cs",
+        "how_used": "Invoked to process PDF files"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfFileHandler.cs",
+        "how_used": "Used by other file handlers to process PDF files"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ImageFileHandler.cs",
+    "architectural_role": "Service Layer (File Handler)",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/IFileHandler.cs",
+        "classes_used": [
+          "IFileHandler"
+        ],
+        "purpose": "This file uses the IFileHandler interface to provide file handling functionality",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+        "classes_used": [
+          "FileMetadata"
+        ],
+        "purpose": "This file uses the FileMetadata class to store processed file metadata",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ControllerFileHandler.cs",
+        "how_used": "Invoked to handle image file processing requests"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ViewFileHandler.cs",
+        "how_used": "Used to render image file metadata in views"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/IFileHandler.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/IFileHandler.cs",
+        "classes_used": [
+          "IFileHandler"
+        ],
+        "purpose": "This file defines the contract for handling file processing, providing methods to determine if a file can be processed and to process a file.",
+        "relationship_type": "Interface"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/IFileHandler.cs",
+        "how_used": "This file is used by other file handlers to determine if a file can be processed and to process a file."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+    "architectural_role": "{\"pattern\": \"Repository Pattern\", \"description\": \"This file implements the repository pattern for SQLite database operations, providing abstraction for data access and manipulation.\"}, \"data_flow\": {\"inputs\": [\"SQLite file path\", \"SQL query to retrieve table names\"], \"outputs\": [\"List of table names from the SQLite database\", \"Error message if query fails\"], \"transformations\": \"Executes SQL queries to retrieve table names, handles exceptions, and returns metadata in a structured format\"}, \"integration_points\": [\"SQLite database files\", \"SQL queries for table retrieval\"]}",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteConnectionHandler.cs",
+        "classes_used": [
+          "SqliteConnection"
+        ],
+        "purpose": "This file provides the connection handling logic for SQLite databases, which is used by the SqliteFileHandler to open connections.",
+        "relationship_type": "Dependency Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+        "classes_used": [
+          "SqliteConnection"
+        ],
+        "purpose": "This file uses the SqliteConnection class to open and manage database connections.",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+        "classes_used": [
+          "SqliteCommand"
+        ],
+        "purpose": "This file uses the SqliteCommand class to execute SQL queries for retrieving table names.",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+        "classes_used": [
+          "SqliteDataReader"
+        ],
+        "purpose": "This file uses the SqliteDataReader class to read data from the database.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteConnectionHandler.cs",
+        "how_used": "Invoked to open and manage SQLite database connections",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+        "how_used": "Used by other file handlers to process SQLite files",
+        "relationship_type": "Usage"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/CodeFileHandler.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/CodeFileHandler.cs",
+        "classes_used": [
+          "IFileHandler"
+        ],
+        "purpose": "This file uses the IFileHandler interface to provide file processing capabilities",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/CodeContentExtractor.cs",
+        "how_used": "Uses the CodeFileHandler to extract metadata and language detection information"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/GitHelper.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/GitHelper.cs",
+        "classes_used": [
+          "RepositoryMetadata",
+          "LibGit2Sharp"
+        ],
+        "purpose": "This file uses LibGit2Sharp to interact with Git repositories and RepoScribe.Core.DataModels to manage metadata",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/GitHelper.cs",
+        "how_used": "Invoked by other helper classes to retrieve repository metadata"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/InputProcessor.cs",
+    "architectural_role": "Helper/Utility Module for Content Processing and Extraction Logic",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/InputProcessor.cs",
+        "classes_used": [
+          "IContentExtractor",
+          "ContentItem"
+        ],
+        "purpose": "This class uses IContentExtractor for content extraction and ContentItem for processing results",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/ContentProcessor.cs",
+        "how_used": "Invoked to process content items using the InputProcessor for extraction logic"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/ContentItemProcessor.cs",
+        "how_used": "Uses InputProcessor to extract content from input strings"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/FileHelper.cs",
+    "architectural_role": "Utility/Helper Module",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/FileHandler.cs",
+        "classes_used": [
+          "IFileHandler"
+        ],
+        "purpose": "This file is used by FileHelper to determine appropriate file handlers",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/InputProcessor.cs",
+        "how_used": "Invoked to process files by determining the appropriate file handler and extracting metadata"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/MarkdownRenderer.cs",
+    "architectural_role": "{\"pattern\": \"Template Renderer\", \"description\": \"Implements rendering logic for different content types using templates\"}",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/CodeBlock.cs",
+        "classes_used": [
+          "CodeBlock"
+        ],
+        "purpose": "This file provides the implementation for code block rendering",
+        "relationship_type": "Composition"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/TemplateRenderer.cs",
+        "classes_used": [
+          "ITemplateRenderer"
+        ],
+        "purpose": "This file provides the interface for template rendering",
+        "relationship_type": "Implementation"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/CodeBlock.cs",
+        "how_used": "Used by MarkdownRenderer to render code blocks"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/TemplateRenderer.cs",
+        "how_used": "Used by MarkdownRenderer to render templates"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/CodeContentItem.cs",
+    "architectural_role": "Service Layer - Code Content Management Service",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Provides local database access for content items",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ChromaDbService.cs",
+        "classes_used": [
+          "ChromaDbService"
+        ],
+        "purpose": "Handles integration with ChromaDB for content storage",
+        "relationship_type": "Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+        "how_used": "Invoked to process code content ingestion and saving"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/CodeContentItem.cs",
+        "how_used": "Used to manage code content items"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/PdfContentItem.cs",
+    "architectural_role": "Service Layer - Business Logic for PDF Content Ingestion and Storage",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "This file uses the LocalDatabaseService to save content items asynchronously.",
+        "relationship_type": "Dependency Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ChromaDbService.cs",
+        "classes_used": [
+          "ChromaDbService"
+        ],
+        "purpose": "This file uses the ChromaDbService to upsert content items asynchronously.",
+        "relationship_type": "Dependency Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+        "how_used": "This file is used by PdfContentItem to inherit its functionality."
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItemBase.cs",
+        "how_used": "This file is used by PdfContentItem to inherit its functionality."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/RepositoryContentItem.cs",
+    "architectural_role": "Service Layer - Repository Pattern Implementation",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Provides local database operations for content items",
+        "relationship_type": "Dependency Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ChromaDbService.cs",
+        "classes_used": [
+          "ChromaDbService"
+        ],
+        "purpose": "Handles database operations for content items using ChromaDB",
+        "relationship_type": "Dependency Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+        "how_used": "Base class for content items, used by RepositoryContentItem"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ImageContentItem.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/LocalDatabaseService.cs",
+        "classes_used": [
+          "LocalDatabaseService"
+        ],
+        "purpose": "Provides local database operations for content items",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ChromaDbService.cs",
+        "classes_used": [
+          "ChromaDbService"
+        ],
+        "purpose": "Handles database operations for content items",
+        "relationship_type": "Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+        "how_used": "Invoked to process content item operations"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+    "architectural_role": "Repository Pattern (Data Access Layer)",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContextSource.cs",
+        "classes_used": [
+          "ContextSource"
+        ],
+        "purpose": "This file uses ContextSource to represent the source of content data",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/IRenderer.cs",
+        "classes_used": [
+          "IRenderer"
+        ],
+        "purpose": "This file uses IRenderer to render content items",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/Metadata.cs",
+        "classes_used": [
+          "Metadata"
+        ],
+        "purpose": "This file uses Metadata to inherit from",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+        "how_used": "Used by other content item classes to inherit from"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItemRepository.cs",
+        "how_used": "Used by repository classes to implement content item operations"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItemService.cs",
+        "how_used": "Used by service classes to handle content item operations"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/CacheEntry.cs",
+    "architectural_role": "Data Model",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/ClusterIndex.cs",
+        "classes_used": [
+          "ClusterIndex"
+        ],
+        "purpose": "This file is used to represent cluster index data associated with cache entries",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/CacheEntry.cs",
+        "how_used": "Used to represent cache entries in the data model"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/RepositoryMetadata.cs",
+    "architectural_role": "Data Model",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/RepositoryMetadata.cs",
+        "classes_used": [
+          "RepositoryMetadata"
+        ],
+        "purpose": "This file uses the RepositoryMetadata class to store metadata about a repository, including URL, author, readme, and list of file metadata.",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+        "how_used": "This file is used by RepositoryMetadata to store file metadata information."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/LineContent.cs",
+    "architectural_role": "Data Access Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/LineContent.cs",
+        "classes_used": [
+          "LineContent"
+        ],
+        "purpose": "This file defines the data model for line content, which is used in the data access layer to store and retrieve individual line entries.",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/LineContent.cs",
+        "how_used": "This file is used by the data access layer to store and retrieve individual line entries."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+    "architectural_role": "Data Model (Repository Pattern)",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+        "classes_used": [
+          "FileMetadata"
+        ],
+        "purpose": "This file defines the data model for file metadata, including properties like Path, Owner, LastModified, SizeMB, Language, Content, and Lines.",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+        "how_used": "This file is used by other data models to store and retrieve file metadata, and is referenced in the repository layer for data persistence."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Metadata.cs",
+    "architectural_role": "Data Model",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Metadata.cs",
+        "classes_used": [
+          "Metadata"
+        ],
+        "purpose": "This file defines the Metadata class which stores file and folder metadata, including path, owner, last modified time, size, language, and content.",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Repository.cs",
+        "how_used": "Used to store and retrieve metadata for repositories"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/AppDbContext.cs",
+    "architectural_role": "{\"pattern\": \"Repository Pattern\", \"description\": \"Provides data access abstraction for the application, managing the database context and entity mappings\"}",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ContentItemEntity.cs",
+        "classes_used": [
+          "ContentItemEntity"
+        ],
+        "purpose": "This file provides the entity for content items, which this database context uses to manage their data.",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/CodeContentItemEntity.cs",
+        "classes_used": [
+          "CodeContentItemEntity"
+        ],
+        "purpose": "This file provides the entity for code content items, which this database context uses to manage their data.",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ImageContentItemEntity.cs",
+        "classes_used": [
+          "ImageContentItemEntity"
+        ],
+        "purpose": "This file provides the entity for image content items, which this database context uses to manage their data.",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/PdfContentItemEntity.cs",
+        "classes_used": [
+          "PdfContentItemEntity"
+        ],
+        "purpose": "This file provides the entity for PDF content items, which this database context uses to manage their data.",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/RepositoryContentItemEntity.cs",
+        "classes_used": [
+          "RepositoryContentItemEntity"
+        ],
+        "purpose": "This file provides the entity for repository content items, which this database context uses to manage their data.",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/LineContentEntity.cs",
+        "classes_used": [
+          "LineContentEntity"
+        ],
+        "purpose": "This file provides the entity for line content, which this database context uses to manage their data.",
+        "relationship_type": "Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ContentItemEntity.cs",
+        "how_used": "Used to map database rows to entity objects",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/CodeContentItemEntity.cs",
+        "how_used": "Used to map database rows to entity objects",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ImageContentItemEntity.cs",
+        "how_used": "Used to map database rows to entity objects",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/PdfContentItemEntity.cs",
+        "how_used": "Used to map database rows to entity objects",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/RepositoryContentItemEntity.cs",
+        "how_used": "Used to map database rows to entity objects",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/LineContentEntity.cs",
+        "how_used": "Used to map database rows to entity objects",
+        "relationship_type": "Usage"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ClusterIndex.cs",
+    "architectural_role": "Repository",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ClusterIndex.cs",
+        "classes_used": [
+          "ClusterIndex"
+        ],
+        "purpose": "This file uses the ClusterIndex class to manage cluster index data",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ClusterIndex.cs",
+        "how_used": "This file is used by the ClusterIndexRepository to manage cluster index operations"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/ConfigurationManager.cs",
+    "architectural_role": "Utility",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/ConfigurationManager.cs",
+        "classes_used": [
+          "ConfigurationBuilder",
+          "IConfiguration",
+          "IConfigurationSection"
+        ],
+        "purpose": "This class uses ConfigurationBuilder to load configuration files from various sources",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/ConfigurationManager.cs",
+        "how_used": "Invoked to load configuration files from the application's directory, user's documents, and environment variables"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/HashUtility.cs",
+    "architectural_role": "Utility/Helper",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/HashUtility.cs",
+        "classes_used": [
+          "HashUtility"
+        ],
+        "purpose": "This file uses the System.Security.Cryptography and System.Text namespaces for cryptographic operations and text encoding.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/HashUtility.cs",
+        "how_used": "This file is used by other utility classes to generate secure hashes and unique identifiers."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/Logger.cs",
+    "architectural_role": "Utility/Helper",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/Logger.cs",
+        "classes_used": [],
+        "purpose": "This file does not use any other classes",
+        "relationship_type": "None"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/Logger.cs",
+        "how_used": "This file is used by other utility classes to initialize logging configuration"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/RepositoryManager.cs",
+    "architectural_role": "Utility",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/RepositoryManager.cs",
+        "classes_used": [
+          "RepositoryManager"
+        ],
+        "purpose": "This file uses itself to manage its own state",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/RepositoryManager.cs",
+        "how_used": "Invoked to save repository configurations to the config file"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/PathUtility.cs",
+    "architectural_role": "Utility/Helper",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/PathUtility.cs",
+        "classes_used": [],
+        "purpose": "This file contains utility methods for converting between dotted path and file path formats.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/PathUtility.cs",
+        "how_used": "This file is used by other utility classes to convert between different path formats."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfContentExtractor.cs",
+    "architectural_role": "Service Layer (Content Extraction Module)",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfPage.cs",
+        "classes_used": [
+          "PdfPage"
+        ],
+        "purpose": "Provides access to PDF pages for content extraction",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfReader.cs",
+        "classes_used": [
+          "PdfReader"
+        ],
+        "purpose": "Handles PDF document reading and processing",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfDocumentOpenMode.cs",
+        "classes_used": [
+          "PdfDocumentOpenMode"
+        ],
+        "purpose": "Specifies how PDF documents are opened",
+        "relationship_type": "Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfContentItem.cs",
+        "how_used": "Invoked to process extracted content",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/IContentExtractor.cs",
+        "how_used": "Implemented interface for content extraction",
+        "relationship_type": "Usage"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/SqliteContentExtractor.cs",
+    "architectural_role": "{\"pattern\": \"Repository Pattern\", \"description\": \"Abstracts SQLite database access for content extraction, providing methods to query and retrieve metadata\"}",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/SqliteConnection.cs",
+        "classes_used": [
+          "SqliteConnection"
+        ],
+        "purpose": "Provides database connection management for SQLite",
+        "relationship_type": "Injection"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/SqliteCommand.cs",
+        "classes_used": [
+          "SqliteCommand"
+        ],
+        "purpose": "Handles SQL queries for SQLite databases",
+        "relationship_type": "Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfContentItem.cs",
+        "how_used": "Reused for content storage",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/LineContent.cs",
+        "how_used": "Used for line content processing",
+        "relationship_type": "Usage"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ImageContentExtractor.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/IContentExtractor.cs",
+        "classes_used": [
+          "IContentExtractor"
+        ],
+        "purpose": "This file provides the interface for content extraction operations",
+        "relationship_type": "Interface"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ImageContentExtractor.cs",
+        "classes_used": [
+          "ImageContentExtractor"
+        ],
+        "purpose": "This file implements the IContentExtractor interface for image content extraction",
+        "relationship_type": "Implementation"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ContentItem.cs",
+        "classes_used": [
+          "ContentItem"
+        ],
+        "purpose": "This file defines the structure of content items extracted from files",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ContentItem.cs",
+        "how_used": "Used to store extracted content items from file processing"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ContentExtractor.cs",
+        "how_used": "Used to handle content extraction operations in the file system"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/CodeBlock.cs",
+    "architectural_role": "Data Model Layer - Provides base class for markdown content with rendering logic",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "classes_used": [
+          "MarkdownContent"
+        ],
+        "purpose": "This file is a base class for markdown content, providing the ToMarkdown and ApplyTemplate methods which are used by CodeBlock.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "how_used": "Invoked to generate markdown representation of code blocks"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/Header.cs",
+    "architectural_role": "Data Model Layer - Implementation of markdown content objects",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "classes_used": [
+          "MarkdownContent"
+        ],
+        "purpose": "This file provides the base class for markdown content objects, which this file depends on for functionality",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "how_used": "This file is used by Header to implement its ToMarkdown and ApplyTemplate methods"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+    "architectural_role": "Data Model",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "classes_used": [
+          "MarkdownContent"
+        ],
+        "purpose": "This file defines the base class for markdown content models, providing the core functionality for generating markdown content.",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "how_used": "Used by other markdown content models to provide common functionality and base implementation"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/IOutputTemplating.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownRenderer.cs",
+        "classes_used": [
+          "MarkdownRenderer"
+        ],
+        "purpose": "This file uses the IOutputTemplating interface to render markdown content",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownRenderer.cs",
+        "how_used": "Consumes the IOutputTemplating interface to render markdown templates"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownDocument.cs",
+    "architectural_role": "Data Model",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "classes_used": [
+          "MarkdownContent"
+        ],
+        "purpose": "This file is used to represent individual markdown content elements",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+        "how_used": "Invoked to add content to a MarkdownDocument"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/Domain.cs",
+    "architectural_role": "Enum Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/Domain.cs",
+        "classes_used": [
+          "Domain"
+        ],
+        "purpose": "Defines domain types for user account management",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/Domain.cs",
+        "how_used": "Used in other enum files to define shared types"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/ContextualInputSource.cs",
+    "architectural_role": "Enum Definition",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/ContextualInputSource.cs",
+        "classes_used": [
+          "ContextualInputSource"
+        ],
+        "purpose": "This enum defines the different sources for contextual input data",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/ContextualInputSource.cs",
+        "how_used": "Used in the enum definition to define the possible values"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+    "architectural_role": "Repository Pattern (Data Access Layer)",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/LineContentEntity.cs",
+        "classes_used": [
+          "LineContentEntity"
+        ],
+        "purpose": "This file uses the ContentItemEntity class to represent a collection of line content items in a content item.",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContextualInputSourceEntity.cs",
+        "classes_used": [
+          "ContextualInputSourceEntity"
+        ],
+        "purpose": "This file uses the ContentItemEntity class to represent a contextual input source for content items.",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/DomainEntity.cs",
+        "classes_used": [
+          "DomainEntity"
+        ],
+        "purpose": "This file uses the ContentItemEntity class to represent the domain context for content items.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Repositories/ContentItemRepository.cs",
+        "how_used": "Invoked to retrieve and manipulate content item entities from the database."
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Repositories/LineContentRepository.cs",
+        "how_used": "Invoked to retrieve and manipulate line content entities associated with content items."
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Repositories/ContextualInputSourceRepository.cs",
+        "how_used": "Invoked to retrieve and manipulate contextual input source entities associated with content items."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ImageContentItemEntity.cs",
+    "architectural_role": "Repository",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ImageContentItemEntity.cs",
+        "classes_used": [
+          "ImageContentItemEntity"
+        ],
+        "purpose": "This file defines the data model for image content items with metadata and binary data",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+        "how_used": "This file is a base class for image content items, providing common properties and methods"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/RepositoryContentItemEntity.cs",
+    "architectural_role": "Model Layer",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/RepositoryContentItemEntity.cs",
+        "classes_used": [
+          "ContentItemEntity"
+        ],
+        "purpose": "This class depends on the ContentItemEntity class to represent the core content item entity",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+        "how_used": "This file is used by RepositoryContentItemEntity to define the core content item entity"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+    "architectural_role": "Data Access Layer (Entity)",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+        "classes_used": [
+          "QueryEntity"
+        ],
+        "purpose": "Base class for user query and response entities",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+        "how_used": "Used by other entities to represent queries and responses"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ConversationEntity.cs",
+    "architectural_role": "Data Model",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+        "classes_used": [
+          "QueryEntity"
+        ],
+        "purpose": "This file is used to represent query entities in the database",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ConversationEntity.cs",
+        "classes_used": [
+          "QueryEntity"
+        ],
+        "purpose": "This file uses QueryEntity to represent conversation queries",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+        "how_used": "Used by ConversationEntity to represent conversation queries"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/LineContentEntity.cs",
+    "architectural_role": "Entity",
+    "dependencies": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+        "classes_used": [
+          "ContentItemEntity"
+        ],
+        "purpose": "This file uses the ContentItemEntity to establish a foreign key relationship for LineContentEntity",
+        "relationship_type": "Association"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+        "how_used": "References LineContentEntity as a foreign key"
+      }
+    ]
+  }
+]

@@ -1,0 +1,1456 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IInputSource.cs",
+    "classes": [
+      {
+        "name": "IInputSource",
+        "description": "Defines the contract for input source operations, providing a method to retrieve a content item.",
+        "methods": [
+          {
+            "name": "GetContentItem",
+            "signature": "public ContentItem GetContentItem()",
+            "description": "Retrieves a content item from the input source. This method is part of the contract defined by IInputSource and should be implemented by concrete classes.",
+            "parameters": [],
+            "returns": "A ContentItem object representing the retrieved content"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IRenderer.cs",
+    "classes": [
+      {
+        "name": "IRenderer",
+        "description": "Defines the contract for rendering content items into strings.",
+        "methods": [
+          {
+            "name": "Render",
+            "signature": "public string Render(ContentItem contentItem)",
+            "description": "Renders a given content item into a string representation.",
+            "parameters": [
+              "contentItem: The content item to be rendered"
+            ],
+            "returns": "A string containing the rendered representation of the content item"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IContentExtractor.cs",
+    "classes": [
+      {
+        "name": "IContentExtractor",
+        "description": "This interface defines the contract for content extraction logic, providing methods to determine if content can be extracted and to extract the content itself.",
+        "methods": [
+          {
+            "name": "CanExtract",
+            "signature": "public bool CanExtract(string input)",
+            "description": "Determines whether content extraction is possible from the given input string. Returns true if extraction can be performed, false otherwise.",
+            "parameters": [
+              "input: The string to check for extractable content"
+            ],
+            "returns": "A boolean indicating whether content extraction is feasible"
+          },
+          {
+            "name": "ExtractContent",
+            "signature": "public ContentItem ExtractContent(string input)",
+            "description": "Extracts structured content from the provided input string. Returns a ContentItem object representing the extracted data.",
+            "parameters": [
+              "input: The string containing the content to be extracted"
+            ],
+            "returns": "A ContentItem object representing the extracted content, or null if extraction fails"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/ITemplateRenderer.cs",
+    "classes": [
+      {
+        "name": "ITemplateRenderer",
+        "description": "Standard interface for template rendering functionality, providing a contract for rendering content items using specified templates.",
+        "methods": [
+          {
+            "name": "Render",
+            "signature": "public string Render(ContentItem contentItem, string template)",
+            "description": "Renders the provided content item using the given template and returns the rendered output as a string.",
+            "parameters": [
+              "contentItem: The content item to be rendered",
+              "template: The name or path of the template to use for rendering"
+            ],
+            "returns": "The rendered output as a string, or null if an error occurs during rendering"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "classes": [
+      {
+        "name": "WorkerPool",
+        "description": "Manages a pool of worker threads to process tasks concurrently. This class allows for efficient handling of background operations by queuing tasks and distributing them among available workers.",
+        "methods": [
+          {
+            "name": "WorkerPool",
+            "signature": "public WorkerPool(int workerCount)",
+            "description": "Initializes a new instance of WorkerPool with the specified number of worker threads.",
+            "parameters": [
+              "workerCount: The desired number of concurrent worker threads to create"
+            ],
+            "returns": null
+          },
+          {
+            "name": "EnqueueTask",
+            "signature": "public void EnqueueTask(Func<Task> task)",
+            "description": "Adds a new task to the worker pool's queue for processing.",
+            "parameters": [
+              "task: The asynchronous operation to be executed by a worker thread"
+            ],
+            "returns": null
+          },
+          {
+            "name": "Stop",
+            "signature": "public void Stop()",
+            "description": "Initiates the shutdown process for the worker pool, signaling workers to stop processing tasks and clean up.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "classes": [
+      {
+        "name": "HttpService",
+        "description": "This service handles HTTP requests, providing methods for retrieving and posting data to external endpoints. It serves as the bridge between the application and the network layer.",
+        "methods": [
+          {
+            "name": "GetAsync",
+            "signature": "public async Task<string> GetAsync(string url)",
+            "description": "Asynchronously performs an HTTP GET request to the specified URL and returns the response content as a string.",
+            "parameters": [
+              "url: The target URL for the HTTP GET request"
+            ],
+            "returns": "The response content from the server as a string, or null if an error occurs"
+          },
+          {
+            "name": "PostAsync",
+            "signature": "public async Task<string> PostAsync(string url, HttpContent content)",
+            "description": "Asynchronously performs an HTTP POST request to the specified URL with the provided content and returns the response content as a string.",
+            "parameters": [
+              "url: The target URL for the HTTP POST request",
+              "content: The content to be sent in the body of the POST request"
+            ],
+            "returns": "The response content from the server as a string, or null if an error occurs"
+          },
+          {
+            "name": "Add other HTTP methods as needed",
+            "signature": "",
+            "description": "This comment indicates that additional HTTP methods (PUT, DELETE, etc.) can be added to this service as required.",
+            "parameters": [],
+            "returns": ""
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/FlattenAllService.cs",
+    "classes": [
+      {
+        "name": "FlattenAllService",
+        "description": "This service processes directories to flatten code files, executing the code flattener tool and logging progress and results.",
+        "methods": [
+          {
+            "name": "FlattenAllAsync",
+            "signature": "public async Task FlattenAllAsync()",
+            "description": "Initiates the process of flattening all code files within directories under the current working directory. It executes the CodeFlattener tool, logs progress and results, and handles potential errors.",
+            "parameters": [],
+            "returns": "void"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": [
+      {
+        "name": "FlattenAllAsync",
+        "signature": "public async Task FlattenAllAsync()",
+        "description": "Initiates the process of flattening all code files within directories under the current working directory. It executes the CodeFlattener tool, logs progress and results, and handles potential errors.",
+        "parameters": [],
+        "returns": "void"
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OllamaService.cs",
+    "classes": [
+      {
+        "name": "OllamaService",
+        "description": "This service handles API requests to the Ollama API, providing methods for retrieving data from the local server. It serves as the entry point for interacting with the Ollama API.",
+        "methods": [
+          {
+            "name": "OllamaService",
+            "signature": "public OllamaService()",
+            "description": "Initializes a new instance of OllamaService, setting up an HTTP client and the base URL for the Ollama API.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "GetAsync",
+            "signature": "public async Task<string> GetAsync(string url, Dictionary<string, string> req)",
+            "description": "Asynchronously sends a GET request to the specified Ollama API endpoint, appending query parameters from the provided dictionary.",
+            "parameters": [
+              "url: The relative path of the API endpoint",
+              "req: A dictionary of query parameters to be appended to the URL"
+            ],
+            "returns": "The response content as a string"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+    "classes": [
+      {
+        "name": "LocalDatabaseService",
+        "description": "Provides local database service implementation for RepoScribe application, managing connections and operations for development and production environments. Handles connection testing, initialization, and migration processes.",
+        "methods": [
+          {
+            "name": "LocalDatabaseService",
+            "signature": "public LocalDatabaseService(IConfiguration config, ILogger logger)",
+            "description": "Initializes a new instance of LocalDatabaseService with required dependencies.",
+            "parameters": [
+              "config: Configuration object for retrieving connection strings.",
+              "logger: Logger instance for logging."
+            ],
+            "returns": null
+          },
+          {
+            "name": "TestConnection",
+            "signature": "public Boolean TestConnection()",
+            "description": "Tests the database connection using the configured connection string. Returns true if the connection is successful, false otherwise.",
+            "parameters": [],
+            "returns": "Boolean indicating connection success."
+          },
+          {
+            "name": "OpenConnection",
+            "signature": "public void OpenConnection()",
+            "description": "Attempts to open a database connection using the configured connection string. Logs errors if the connection fails.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "InitializeDatabase",
+            "signature": "public void InitializeDatabase()",
+            "description": "Initializes the database by creating tables (if they don't exist) and potentially running migrations based on the environment. Ensures a successful connection before proceeding.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": [
+      {
+        "name": "LocalDatabaseService",
+        "signature": "public LocalDatabaseService(IConfiguration config, ILogger logger)",
+        "description": "Initializes a new instance of LocalDatabaseService with required dependencies.",
+        "parameters": [
+          "config: Configuration object for retrieving connection strings.",
+          "logger: Logger instance for logging."
+        ],
+        "returns": null
+      },
+      {
+        "name": "TestConnection",
+        "signature": "public Boolean TestConnection()",
+        "description": "Tests the database connection using the configured connection string. Returns true if the connection is successful, false otherwise.",
+        "parameters": [],
+        "returns": "Boolean indicating connection success."
+      },
+      {
+        "name": "OpenConnection",
+        "signature": "public void OpenConnection()",
+        "description": "Attempts to open a database connection using the configured connection string. Logs errors if the connection fails.",
+        "parameters": [],
+        "returns": null
+      },
+      {
+        "name": "InitializeDatabase",
+        "signature": "public void InitializeDatabase()",
+        "description": "Initializes the database by creating tables (if they don't exist) and potentially running migrations based on the environment. Ensures a successful connection before proceeding.",
+        "parameters": [],
+        "returns": null
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/MarkdownExtractor.cs",
+    "classes": [
+      {
+        "name": "MarkdownExtractor",
+        "description": "Extracts code blocks from markdown files, identifying code snippets with headers and language specifications, and converts them into JSON format for further processing.",
+        "methods": [
+          {
+            "name": "MarkdownExtractor",
+            "signature": "public MarkdownExtractor(string inputDirectory)",
+            "description": "Initializes a new instance of MarkdownExtractor, setting the input directory for processing markdown files.",
+            "parameters": [
+              "inputDirectory: The path to the directory containing markdown files"
+            ],
+            "returns": null
+          },
+          {
+            "name": "ExtractCodeBlocks",
+            "signature": "public IEnumerable<string> ExtractCodeBlocks()",
+            "description": "Extracts code blocks from all markdown files within the specified input directory and returns them as JSON strings.",
+            "parameters": [],
+            "returns": "An enumerable collection of JSON-serialized code objects, each representing a code block extracted from a markdown file"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ChromaDbService.cs",
+    "classes": [
+      {
+        "name": "ChromaDbService",
+        "description": "Handles content item insertion into ChromaDB using HTTP POST requests, providing asynchronous upsert operations for content metadata and properties.",
+        "methods": [
+          {
+            "name": "Instance",
+            "signature": "public static ChromaDbService Instance",
+            "description": "Provides access to the singleton instance of the ChromaDbService.",
+            "parameters": [],
+            "returns": "The singleton instance of ChromaDbService."
+          },
+          {
+            "name": "UpsertAsync",
+            "signature": "public async Task UpsertAsync(ContentItem contentItem)",
+            "description": "Asynchronously inserts or updates a content item in ChromaDB.",
+            "parameters": [
+              "contentItem: The ContentItem object to be inserted or updated."
+            ],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfFileHandler.cs",
+    "classes": [
+      {
+        "name": "PdfFileHandler",
+        "description": "Handles PDF file processing, determining if it can be handled and extracting text content for further use. It provides metadata about the PDF file including owner, last modified time, size, and content.",
+        "methods": [
+          {
+            "name": "CanHandle",
+            "signature": "public bool CanHandle(string extension)",
+            "description": "Checks if the provided file extension is supported by this handler.",
+            "parameters": [
+              "extension: The file extension to check (case-insensitive)"
+            ],
+            "returns": "True if the extension is supported, false otherwise"
+          },
+          {
+            "name": "ProcessFile",
+            "signature": "public FileMetadata ProcessFile(string filePath)",
+            "description": "Processes a PDF file, extracting metadata and text content.",
+            "parameters": [
+              "filePath: The path to the PDF file to process"
+            ],
+            "returns": "A FileMetadata object containing information about the processed PDF file"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ImageFileHandler.cs",
+    "classes": [
+      {
+        "name": "ImageFileHandler",
+        "description": "Handles processing of image files, determining if a file is an image and extracting relevant metadata for further use.",
+        "methods": [
+          {
+            "name": "CanHandle",
+            "signature": "public bool CanHandle(string extension)",
+            "description": "Checks if the handler can process a file based on its extension.",
+            "parameters": [
+              "extension: The file extension (including dot) to check"
+            ],
+            "returns": "True if the extension is supported, false otherwise"
+          },
+          {
+            "name": "ProcessFile",
+            "signature": "public FileMetadata ProcessFile(string filePath)",
+            "description": "Processes an image file, extracting metadata and returning a FileMetadata object.",
+            "parameters": [
+              "filePath: The path to the image file"
+            ],
+            "returns": "A FileMetadata object containing information about the processed image file"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/IFileHandler.cs",
+    "classes": [
+      {
+        "name": "IFileHandler",
+        "description": "This interface defines a handler for file operations, providing methods to check if a file can be processed and to extract metadata. It serves as a contract for file processing logic in the codebase.",
+        "methods": [
+          {
+            "name": "CanHandle",
+            "signature": "public bool CanHandle(string extension)",
+            "description": "Determines if this file handler can process files with the specified extension.",
+            "parameters": [
+              "extension: The file extension (e.g., 'txt', 'pdf') to check"
+            ],
+            "returns": "True if the handler can process files of the given extension, false otherwise"
+          },
+          {
+            "name": "ProcessFile",
+            "signature": "public FileMetadata ProcessFile(string filePath)",
+            "description": "Processes a file located at the specified path and extracts metadata.",
+            "parameters": [
+              "filePath: The full path to the file to be processed"
+            ],
+            "returns": "An instance of FileMetadata containing extracted information about the file"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+    "classes": [
+      {
+        "name": "SqliteFileHandler",
+        "description": "Handles operations related to SQLite database files, including checking file extensions, retrieving table names, and extracting metadata.",
+        "methods": [
+          {
+            "name": "CanHandle",
+            "signature": "public bool CanHandle(string extension)",
+            "description": "Determines if the handler can process a file based on its extension.",
+            "parameters": [
+              "extension: The file extension to check (e.g., '.sqlite')"
+            ],
+            "returns": "True if the extension is supported, false otherwise"
+          },
+          {
+            "name": "ProcessFile",
+            "signature": "public FileMetadata ProcessFile(string filePath)",
+            "description": "Processes an SQLite database file and extracts metadata.",
+            "parameters": [
+              "filePath: The path to the SQLite database file."
+            ],
+            "returns": "A FileMetadata object containing information about the file, including tables, owner, last modified date, size in MB, language, content, and lines of content."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/CodeFileHandler.cs",
+    "classes": [
+      {
+        "name": "CodeFileHandler",
+        "description": "Handles processing of code files, determining their language, and extracting metadata such as owner, last modified time, size, and content. **Note:** This class is deprecated; use CodeContentExtractor instead.",
+        "methods": [
+          {
+            "name": "CodeFileHandler",
+            "signature": "public CodeFileHandler(Dictionary<string, string> languageMap)",
+            "description": "Initializes a new instance of CodeFileHandler with the provided language mapping.",
+            "parameters": [
+              "languageMap: A dictionary mapping file extensions to their programming languages."
+            ],
+            "returns": null
+          },
+          {
+            "name": "CanHandle",
+            "signature": "public bool CanHandle(string extension)",
+            "description": "Determines if the handler can process a file with the given extension.",
+            "parameters": [
+              "extension: The file extension to check (e.g., '.cs', '.java')."
+            ],
+            "returns": "True if the handler supports the specified extension, false otherwise."
+          },
+          {
+            "name": "ProcessFile",
+            "signature": "public FileMetadata ProcessFile(string filePath)",
+            "description": "Processes a code file, extracting metadata and content.",
+            "parameters": [
+              "filePath: The path to the code file to process."
+            ],
+            "returns": "A FileMetadata object containing information about the processed file."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/GitHelper.cs",
+    "classes": [
+      {
+        "name": "GitHelper",
+        "description": "Provides utility methods for retrieving repository metadata using LibGit2Sharp, including URL, author information, and README content.",
+        "methods": [
+          {
+            "name": "GetRepositoryMetadata",
+            "signature": "public RepositoryMetadata GetRepositoryMetadata(string repoPath)",
+            "description": "Retrieves metadata for a Git repository located at the specified path. This includes the repository URL, author name, and content of the README file.",
+            "parameters": [
+              "repoPath: The full path to the Git repository directory",
+              "repoPath: The full path to the Git repository directory"
+            ],
+            "returns": "An instance of RepositoryMetadata containing the retrieved metadata."
+          },
+          {
+            "name": "GetReadmeContent",
+            "signature": "private string GetReadmeContent(string repoPath)",
+            "description": "Extracts and returns the content of the README file from a Git repository located at the specified path. Returns an empty string if no README file is found.",
+            "parameters": [
+              "repoPath: The full path to the Git repository directory"
+            ],
+            "returns": "The content of the README file as a string, or an empty string if no README file exists."
+          },
+          {
+            "name": "exceptions",
+            "signature": "",
+            "description": "Throws ArgumentNullException if repoPath is null.",
+            "parameters": [],
+            "returns": ""
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/InputProcessor.cs",
+    "classes": [
+      {
+        "name": "InputProcessor",
+        "description": "Processes input strings by determining the appropriate content extractor based on file extension or name, then extracting relevant content.",
+        "methods": [
+          {
+            "name": "ProcessInput",
+            "signature": "public ContentItem ProcessInput(string input)",
+            "description": "Processes a given input string to extract content. Determines the appropriate content extractor based on file extension or name and invokes it.",
+            "parameters": [
+              "input: The input string to process, which can be a file path or direct content",
+              "input: If no extension is found, the filename is used for extractor selection"
+            ],
+            "returns": "A ContentItem object containing extracted data if successful, null otherwise"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/FileHelper.cs",
+    "classes": [
+      {
+        "name": "FileHelper",
+        "description": "A helper class for processing files, determining the appropriate file handler based on the file extension, and returning the corresponding file metadata. It serves as a bridge between the file system and the file processing logic.",
+        "methods": [
+          {
+            "name": "ProcessFile",
+            "signature": "public FileMetadata ProcessFile(string filePath)",
+            "description": "Processes a given file path, determines the appropriate file handler based on its extension, and returns the metadata of the processed file. If no suitable handler is found, returns null.",
+            "parameters": [
+              "filePath: The path to the file to be processed"
+            ],
+            "returns": "FileMetadata containing details about the processed file or null if no handler was found"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/MarkdownRenderer.cs",
+    "classes": [
+      {
+        "name": "MarkdownRenderer",
+        "description": "This class implements a markdown renderer that processes content items and generates formatted output based on specified templates. It handles code, image, pdf, and repository content items, applying templates and formatting rules to produce readable output.",
+        "methods": [
+          {
+            "name": "Render",
+            "signature": "public string Render(ContentItem contentItem)",
+            "description": "Renders a single content item into markdown format. If no template is provided, it generates metadata and the code block in markdown format.",
+            "parameters": [
+              "contentItem: The content item to render (cannot be null)"
+            ],
+            "returns": "The rendered content as a string in markdown format"
+          },
+          {
+            "name": "Render",
+            "signature": "public string Render(ContentItem contentItem, string template)",
+            "description": "Renders a single content item into markdown format using a specified template. If the template is provided, it applies the template to the content block.",
+            "parameters": [
+              "contentItem: The content item to render (cannot be null)",
+              "template: The template string to apply (optional)"
+            ],
+            "returns": "The rendered content as a string in markdown format"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/CodeContentItem.cs",
+    "classes": [
+      {
+        "name": "CodeContentItem",
+        "description": "Represents a content item specifically designed for storing and managing code-related data. It extends the generic ContentItem class, adding specialized functionality for ingesting and saving code to both local and remote databases.",
+        "methods": [
+          {
+            "name": "Ingest",
+            "signature": "public override void Ingest()",
+            "description": "Implements the logic for ingesting code-related data. This involves parsing the code, analyzing dependencies, and preparing it for storage.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "SaveAsync",
+            "signature": "public override async Task SaveAsync()",
+            "description": "Saves the CodeContentItem instance to both a local database and ChromaDB. This method ensures data persistence across different storage systems.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/PdfContentItem.cs",
+    "classes": [
+      {
+        "name": "PdfContentItem",
+        "description": "Represents a PDF content item, encapsulating its metadata and extracted text lines for storage and retrieval.",
+        "methods": [
+          {
+            "name": "Ingest",
+            "signature": "public override void Ingest()",
+            "description": "Implements the logic to extract content (text, metadata) from a PDF file. This method should be overridden by subclasses to provide specific PDF processing.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "SaveAsync",
+            "signature": "public override async Task SaveAsync()",
+            "description": "Saves the current PdfContentItem instance to both local and cloud databases. This method ensures data persistence across different storage mechanisms.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/RepositoryContentItem.cs",
+    "classes": [
+      {
+        "name": "RepositoryContentItem",
+        "description": "Represents a repository content item, encapsulating data like URL, author, readme, and nested files. Handles ingestion and saving operations asynchronously.",
+        "methods": [
+          {
+            "name": "Ingest",
+            "signature": "public override void Ingest()",
+            "description": "Implements the logic for ingesting repository data, such as cloning the repository and parsing its contents.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "SaveAsync",
+            "signature": "public override async Task SaveAsync()",
+            "description": "Saves this repository content item to both local database and ChromaDB asynchronously. Optionally saves nested files as well.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ImageContentItem.cs",
+    "classes": [
+      {
+        "name": "ImageContentItem",
+        "description": "Represents an image content item with associated metadata and binary data. It extends the base ContentItem class to provide specific handling for images, including ingestion and saving logic.",
+        "methods": [
+          {
+            "name": "Ingest",
+            "signature": "public override void Ingest()",
+            "description": "Implements the logic for ingesting an image content item. This typically involves extracting metadata, generating thumbnails, and preparing the image data for storage.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "SaveAsync",
+            "signature": "public override async Task SaveAsync()",
+            "description": "Saves the image content item to both local database and ChromaDB. This method ensures that changes are persisted in both systems.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+    "classes": [
+      {
+        "name": "ContentItem",
+        "description": "The core data model for content items in RepoScribe, providing essential properties and methods for ingestion, saving, and rendering. It serves as the foundation for managing content within the system.",
+        "methods": [
+          {
+            "name": "Ingest",
+            "signature": "public void Ingest()",
+            "description": "Abstract method for ingesting content data into this ContentItem instance. Subclasses should provide concrete implementations.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "SaveAsync",
+            "signature": "public virtual async Task SaveAsync()",
+            "description": "Asynchronously saves the current content item to persistent storage. Subclasses should provide concrete implementations.",
+            "parameters": [],
+            "returns": "Task representing the asynchronous save operation"
+          },
+          {
+            "name": "Save",
+            "signature": "public virtual void Save()",
+            "description": "Saves the current content item to persistent storage synchronously. Subclasses should provide concrete implementations.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "RenderAs",
+            "signature": "public virtual string RenderAs(IRenderer renderer)",
+            "description": "Renders this content item using the provided renderer, returning the rendered output as a string. Subclasses should provide concrete implementations.",
+            "parameters": [
+              "renderer: Interface for rendering content items"
+            ],
+            "returns": "String representation of the rendered content"
+          },
+          {
+            "name": "GetSummary",
+            "signature": "public virtual string GetSummary()",
+            "description": "Retrieves a summary representation of this content item. Subclasses should provide concrete implementations.",
+            "parameters": [],
+            "returns": "String summary of the content item"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/CacheEntry.cs",
+    "classes": [
+      {
+        "name": "CacheEntry",
+        "description": "This class represents a cache entry containing information about keywords and cluster indices.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/RepositoryMetadata.cs",
+    "classes": [
+      {
+        "name": "RepositoryMetadata",
+        "description": "Represents metadata for a software repository, including URL, author information, readme content, and a collection of file metadata.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/LineContent.cs",
+    "classes": [
+      {
+        "name": "LineContent",
+        "description": "This class represents line content data, containing a number and a content string. It serves as a data model for storing and retrieving line content in the system.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+    "classes": [
+      {
+        "name": "FileMetadata",
+        "description": "This class represents a data model for storing metadata about files, including path, owner, modification date, size in megabytes, programming language, file content, and line-by-line details.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Metadata.cs",
+    "classes": [
+      {
+        "name": "Metadata",
+        "description": "This class defines a metadata object that stores information about files or folders, including path, owner, last modified date, size in megabytes, language, and content.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/AppDbContext.cs",
+    "classes": [
+      {
+        "name": "AppDbContext",
+        "description": "Database context for the RepoScribe application, managing the mapping between the application's domain models and the database. It includes DbSet properties for various content types and handles the configuration of the database schema using Fluent API.",
+        "methods": [
+          {
+            "name": "AppDbContext",
+            "signature": "public AppDbContext(DbContextOptions<AppDbContext> options)",
+            "description": "Initializes a new instance of AppDbContext, configuring it with provided DbContextOptions.",
+            "parameters": [
+              "options: Configuration options for the database context"
+            ],
+            "returns": null
+          },
+          {
+            "name": "OnModelCreating",
+            "signature": "protected override void OnModelCreating(ModelBuilder modelBuilder)",
+            "description": "Configures the database schema using Fluent API. Sets up inheritance for content item types and defines relationships between entities.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ClusterIndex.cs",
+    "classes": [
+      {
+        "name": "ClusterIndex",
+        "description": "Represents a cluster index in the database, containing metadata about the cluster (ID), unique identifier for the index within the cluster (ID), and a list of member embeddings.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/ConfigurationManager.cs",
+    "classes": [
+      {
+        "name": "ConfigurationManager",
+        "description": "Manages configuration settings for the application, prioritizing user-specific configurations over default settings and environment variables.",
+        "methods": [
+          {
+            "name": "ConfigurationManager",
+            "signature": "public ConfigurationManager()",
+            "description": "Initializes a new instance of ConfigurationManager, attempting to load configurations from environment variables, user home directory, and default application directory in that order.",
+            "parameters": [],
+            "returns": "_configuration: The configured instance holding all application settings."
+          },
+          {
+            "name": "ConfigurationManager",
+            "signature": "public ConfigurationManager(string configPath)",
+            "description": "Initializes a new instance of ConfigurationManager, loading configurations from the specified path.",
+            "parameters": [
+              "configPath: The path to the configuration file to load."
+            ],
+            "returns": "_configuration: The configured instance holding all application settings loaded from the specified path."
+          },
+          {
+            "name": "GetLanguageMap",
+            "signature": "public Dictionary<string, string> GetLanguageMap()",
+            "description": "Retrieves a dictionary mapping file extensions to their corresponding languages as defined in the 'AllowedFiles' section of the configuration.",
+            "parameters": [],
+            "returns": "A dictionary containing mappings of file extensions to languages."
+          },
+          {
+            "name": "GetIgnoredPaths",
+            "signature": "public List<string> GetIgnoredPaths()",
+            "description": "Retrieves a list of paths that should be ignored during code analysis, as defined in the 'Ignored' section of the configuration.",
+            "parameters": [],
+            "returns": "A list of paths to ignore."
+          },
+          {
+            "name": "GetExtractChunksInputDirectory",
+            "signature": "public string GetExtractChunksInputDirectory()",
+            "description": "Retrieves the directory path where extracted code chunks should be stored, prioritizing a user-specific setting over a default application setting.",
+            "parameters": [],
+            "returns": "The directory path for storing extracted code chunks."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/HashUtility.cs",
+    "classes": [
+      {
+        "name": "HashUtility",
+        "description": "This utility class provides methods for generating content hashes and unique identifiers using SHA-256 encryption. It is used for secure data verification and session management.",
+        "methods": [
+          {
+            "name": "GetContentHash",
+            "signature": "public static string GetContentHash(string content)",
+            "description": "Computes the SHA-256 hash of the provided content string and returns it as a hexadecimal string.",
+            "parameters": [
+              "content: The string to be hashed"
+            ],
+            "returns": "The SHA-256 hash of the input content as a lowercase hexadecimal string without separators"
+          },
+          {
+            "name": "GetUniqueId",
+            "signature": "public static string GetUniqueId(string content)",
+            "description": "Generates a unique identifier by extracting the first 32 characters from the SHA-256 hash of the provided content.",
+            "parameters": [
+              "content: The string to generate a unique ID for"
+            ],
+            "returns": "A 32-character substring derived from the SHA-256 hash of the input content"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/Logger.cs",
+    "classes": [
+      {
+        "name": "Logger",
+        "description": "Provides logging functionality for RepoScribe Core, initializing a logger to write logs to the console and a file. Manages the lifecycle of the logging system.",
+        "methods": [
+          {
+            "name": "Initialize",
+            "signature": "public static void Initialize()",
+            "description": "Configures Serilog for logging, writing to both the console and a rolling file named 'log.txt' in the 'logs' directory with daily rollovers.",
+            "parameters": [],
+            "returns": null
+          },
+          {
+            "name": "CloseAndFlush",
+            "signature": "public static void CloseAndFlush()",
+            "description": "Flushes any buffered log messages and closes the logger, ensuring all data is written to the configured destinations (console and file).",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/RepositoryManager.cs",
+    "classes": [
+      {
+        "name": "RepositoryManager",
+        "description": "Manages configuration of repository paths by loading and saving a list from a JSON file.",
+        "methods": [
+          {
+            "name": "RepositoryManager",
+            "signature": "public RepositoryManager(string configPath)",
+            "description": "Initializes a new instance of RepositoryManager with the specified configuration file path.",
+            "parameters": [
+              "configPath: The full path to the JSON configuration file for repositories"
+            ],
+            "returns": null
+          },
+          {
+            "name": "Save",
+            "signature": "public void Save()",
+            "description": "Saves the current list of repository paths to the specified configuration file in JSON format.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/SetupManager.cs",
+    "classes": [
+      {
+        "name": "SetupManager",
+        "description": "Manages the initialization of application directories and configuration files for the RepoScribe application. It determines the program data and configuration paths based on user environment settings and ensures necessary directories are created if they don't exist.",
+        "methods": [
+          {
+            "name": "SetupManager",
+            "signature": "public SetupManager()",
+            "description": "Initializes a new instance of SetupManager. This constructor checks for the presence of user-specific and application-wide directories and configuration files, preparing them for use by the application.",
+            "parameters": [],
+            "returns": null
+          }
+        ]
+      },
+      {
+        "name": "ProgramDataPaths",
+        "description": "An enumeration representing different types of program data paths that SetupManager can handle.",
+        "methods": []
+      },
+      {
+        "name": "ConfigPaths",
+        "description": "An enumeration representing different types of configuration paths that SetupManager can handle.",
+        "methods": []
+      },
+      {
+        "name": "PathData",
+        "description": "A struct representing combined program data path and configuration path information.",
+        "methods": []
+      },
+      {
+        "name": "PathDataPair",
+        "description": "A struct containing multiple PathData instances for different path types.",
+        "methods": [
+          {
+            "name": "GetPath",
+            "signature": "internal string GetPath(PathDataPair pathDataPair)",
+            "description": "Retrieves a specific path based on the provided PathDataPair. This method currently only returns the home directory configuration path.",
+            "parameters": [
+              "pathDataPair: The PathDataPair instance to determine which path to retrieve."
+            ],
+            "returns": "The path string corresponding to the requested type, or null if not found."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/PathUtility.cs",
+    "classes": [
+      {
+        "name": "PathUtility",
+        "description": "This utility class provides methods to convert between dotted path representations and actual file paths, handling directory separators for consistent path formatting.",
+        "methods": [
+          {
+            "name": "ConvertDottedPathToFilePath",
+            "signature": "public static string ConvertDottedPathToFilePath(string dottedPath)",
+            "description": "Converts a dotted path representation to an actual file path, replacing '.' with the appropriate directory separator character.",
+            "parameters": [
+              "dottedPath: The path represented as a series of dot-separated segments"
+            ],
+            "returns": "The converted file path string"
+          },
+          {
+            "name": "ConvertFilePathToDottedPath",
+            "signature": "public static string ConvertFilePathToDottedPath(string filePath)",
+            "description": "Converts an actual file path to a dotted path representation, replacing directory separator characters with '.'.",
+            "parameters": [
+              "filePath: The file path to be converted"
+            ],
+            "returns": "The converted dotted path string"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfContentExtractor.cs",
+    "classes": [
+      {
+        "name": "PdfContentExtractor",
+        "description": "A class responsible for extracting content from PDF files. It identifies supported file types, extracts text, and structures the extracted data into a ContentItem object.",
+        "methods": [
+          {
+            "name": "CanExtract",
+            "signature": "public bool CanExtract(string input)",
+            "description": "Determines if the provided input file path corresponds to a supported PDF file type.",
+            "parameters": [
+              "input: The full path of the file to check for extraction support"
+            ],
+            "returns": "True if the file extension is '.pdf', false otherwise"
+          },
+          {
+            "name": "ExtractContent",
+            "signature": "public ContentItem ExtractContent(string input)",
+            "description": "Extracts content from a PDF file and returns a structured ContentItem object.",
+            "parameters": [
+              "input: The full path of the PDF file to extract content from"
+            ],
+            "returns": "A PdfContentItem containing metadata about the PDF file and its extracted text lines"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/SqliteContentExtractor.cs",
+    "classes": [
+      {
+        "name": "SqliteContentExtractor",
+        "description": "Implements business logic for extracting metadata and content from SQLite databases, identifying supported file types and extracting table names and basic metadata.",
+        "methods": [
+          {
+            "name": "CanExtract",
+            "signature": "public bool CanExtract(string input)",
+            "description": "Determines if the provided input file is a supported SQLite database file based on its extension.",
+            "parameters": [
+              "input: The path to the file to be checked"
+            ],
+            "returns": "True if the file is a supported SQLite database, false otherwise"
+          },
+          {
+            "name": "ExtractContent",
+            "signature": "public ContentItem ExtractContent(string input)",
+            "description": "Extracts content and metadata from a supported SQLite database file.",
+            "parameters": [
+              "input: The path to the SQLite database file"
+            ],
+            "returns": "A ContentItem object containing extracted information about the database, including table names, owner, last modified date, size in MB, language (sqlite), raw content, and individual lines of content."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": [
+      {
+        "name": "GetTables",
+        "signature": "private List<string> GetTables(string filePath)",
+        "description": "Extracts a list of table names from the provided SQLite database file.",
+        "parameters": [
+          "filePath: The path to the SQLite database file"
+        ],
+        "returns": "A list of table names extracted from the database, or an error message if extraction fails."
+      }
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ImageContentExtractor.cs",
+    "classes": [
+      {
+        "name": "ImageContentExtractor",
+        "description": "This class implements an image content extractor that identifies supported image formats, extracts metadata, and returns basic information about image files.",
+        "methods": [
+          {
+            "name": "CanExtract",
+            "signature": "public bool CanExtract(string input)",
+            "description": "Determines if the extractor can process a given file path based on its extension.",
+            "parameters": [
+              "input: The path to the file to be checked for extraction capability"
+            ],
+            "returns": "True if the file's extension is supported, false otherwise"
+          },
+          {
+            "name": "ExtractContent",
+            "signature": "public ContentItem ExtractContent(string input)",
+            "description": "Extracts content information and metadata from an image file.",
+            "parameters": [
+              "input: The path to the image file"
+            ],
+            "returns": "An ImageContentItem object containing details about the image (path, owner, last modified date, size in MB, language, image metadata)"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/CodeBlock.cs",
+    "classes": [
+      {
+        "name": "CodeBlock",
+        "description": "Represents a markdown code block with language and content properties, providing methods to format and render code snippets.",
+        "methods": [
+          {
+            "name": "CodeBlock",
+            "signature": "public CodeBlock(string language, string content)",
+            "description": "Initializes a new instance of CodeBlock with specified programming language and code content.",
+            "parameters": [
+              "language: The programming language of the code snippet (e.g., 'csharp', 'python')",
+              "content: The actual content of the code block"
+            ],
+            "returns": null
+          },
+          {
+            "name": "ToMarkdown",
+            "signature": "public override string ToMarkdown()",
+            "description": "Converts this CodeBlock instance to a markdown-formatted string.",
+            "parameters": [],
+            "returns": "A markdown-formatted string representing the code block."
+          },
+          {
+            "name": "ApplyTemplate",
+            "signature": "public override string ApplyTemplate(string template)",
+            "description": "Applies a given template to the markdown representation of this CodeBlock.",
+            "parameters": [
+              "template: The template string to apply, which may contain placeholders for the markdown content"
+            ],
+            "returns": "The formatted string after applying the template."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/Header.cs",
+    "classes": [
+      {
+        "name": "Header",
+        "description": "Represents a markdown header with a specified level and text content, providing methods to construct and format markdown headers.",
+        "methods": [
+          {
+            "name": "Header",
+            "signature": "public Header(int level, string text)",
+            "description": "Initializes a new instance of Header with the specified level and text.",
+            "parameters": [
+              "level: The level of the markdown header (1 for H1, 2 for H2, etc.)",
+              "text: The text content of the markdown header"
+            ],
+            "returns": null
+          },
+          {
+            "name": "ToMarkdown",
+            "signature": "public override string ToMarkdown()",
+            "description": "Converts this Header object to its markdown representation.",
+            "parameters": [],
+            "returns": "A string representing the markdown header with the specified level and text"
+          },
+          {
+            "name": "ApplyTemplate",
+            "signature": "public override string ApplyTemplate(string template)",
+            "description": "Applies a given template to this Header object's markdown representation.",
+            "parameters": [
+              "template: The template string to apply, which may contain placeholders for the markdown content"
+            ],
+            "returns": "A formatted string based on the provided template and the markdown representation of this Header"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+    "classes": [
+      {
+        "name": "MarkdownContent",
+        "description": "Base class for markdown content models, providing a method to convert content to markdown format and a virtual method for template application. It serves as the foundation for different markdown content types in the application.",
+        "methods": [
+          {
+            "name": "ToMarkdown",
+            "signature": "public abstract string ToMarkdown()",
+            "description": "Abstract method that must be implemented by subclasses to convert the specific content type into markdown format.",
+            "parameters": [],
+            "returns": "String representation of the content in markdown format"
+          },
+          {
+            "name": "ToString",
+            "signature": "public override string ToString()",
+            "description": "Overrides the default ToString method to call ToMarkdown and return its result. This provides a convenient way to get markdown representation of an instance.",
+            "parameters": [],
+            "returns": "String representation of the content in markdown format"
+          },
+          {
+            "name": "ApplyTemplate",
+            "signature": "public virtual string ApplyTemplate(string template)",
+            "description": "Virtual method for applying a template to the markdown content. It uses string formatting to insert the markdown content into the provided template.",
+            "parameters": [
+              "template: The string template with placeholders for markdown content"
+            ],
+            "returns": "String with the template applied, substituting placeholders with the markdown representation of this content."
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/IOutputTemplating.cs",
+    "classes": [
+      {
+        "name": "IOutputTemplating",
+        "description": "This interface defines a contract for applying templates to markdown documents, enabling dynamic content generation based on specified templates.",
+        "methods": [
+          {
+            "name": "ApplyTemplate",
+            "signature": "public string ApplyTemplate(string template)",
+            "description": "Applies the provided markdown template to a base document, replacing placeholders with actual content. Returns the resulting processed markdown text.",
+            "parameters": [
+              "template: The markdown template string containing placeholders for dynamic content"
+            ],
+            "returns": "The processed markdown text after applying the template and substituting placeholders with real data"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownDocument.cs",
+    "classes": [
+      {
+        "name": "MarkdownDocument",
+        "description": "This class manages markdown content in a document, providing methods to add content and convert the document to a string representation.",
+        "methods": [
+          {
+            "name": "AddContent",
+            "signature": "public void AddContent(MarkdownContent content)",
+            "description": "Adds a new piece of markdown content to the document.",
+            "parameters": [
+              "content: The MarkdownContent object representing the new content to be added"
+            ],
+            "returns": null
+          },
+          {
+            "name": "ToString",
+            "signature": "public override string ToString()",
+            "description": "Converts the markdown document into a string representation by concatenating all stored contents.",
+            "parameters": [],
+            "returns": "A string containing the combined markdown content of the document"
+          }
+        ]
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/Domain.cs",
+    "classes": [
+      {
+        "name": "Domain",
+        "description": "This enum defines the different types of domains for user account management, including protected, personal, interpersonal, and professional categories.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/ContextualInputSource.cs",
+    "classes": [
+      {
+        "name": "ContextualInputSource",
+        "description": "This enum defines the possible sources for contextual input data, including host files, GitHub, browsing history, email, local files, SMS, and others. It serves as a configuration layer for data input mechanisms.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+    "classes": [
+      {
+        "name": "ContentItemEntity",
+        "description": "This abstract class defines the core data model for content items in the database, including essential properties like ID, path, owner, last modified time, size, language, content, domain, and contextual source. It serves as the foundation for managing content within the system.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ImageContentItemEntity.cs",
+    "classes": [
+      {
+        "name": "ImageContentItemEntity",
+        "description": "Represents image content items with metadata and binary data, providing storage for image-related information in the database.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/PdfContentItemEntity.cs",
+    "classes": [
+      {
+        "name": "PdfContentItemEntity",
+        "description": "Represents a database entity for storing PDF content items, inheriting properties and behaviors from the base ContentItemEntity class.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/RepositoryContentItemEntity.cs",
+    "classes": [
+      {
+        "name": "RepositoryContentItemEntity",
+        "description": "Represents a repository content item, including its URL, author information, readme content, and a collection of associated files.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/CodeContentItemEntity.cs",
+    "classes": [
+      {
+        "name": "CodeContentItemEntity",
+        "description": "Represents a code content item in the system, inheriting properties and behaviors from the base ContentItemEntity class.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+    "classes": [
+      {
+        "name": "QueryEntity",
+        "description": "Abstract base class for query entities, providing common properties and methods for managing user queries and responses within the database system.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ConversationEntity.cs",
+    "classes": [
+      {
+        "name": "ConversationEntity",
+        "description": "Represents a conversation in the database, including properties for unique identifier, queries, name, timestamp, provider, URL, and topics.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/LineContentEntity.cs",
+    "classes": [
+      {
+        "name": "LineContentEntity",
+        "description": "This entity represents line content in a document, containing fields for unique identifier, number, content, and a foreign key to the parent ContentItemEntity.",
+        "methods": []
+      }
+    ],
+    "standalone_methods": []
+  }
+]

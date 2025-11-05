@@ -1,0 +1,75 @@
+# Classic Theme Configuration
+name: "Classic"
+description: "Classic theme with traditional chart colors"
+
+chart_layout:
+  background_color: "#f5f5f5"
+  paper_bgcolor: "#f5f5f5"
+  plot_bgcolor: "#ffffff"
+  font_family: "Times New Roman, serif"
+  font_size: 11
+  font_color: "#2c2c2c"
+  showlegend: true
+  margin:
+    l: 70
+    r: 50
+    t: 50
+    b: 50
+  xaxis:
+    showgrid: true
+    gridcolor: "#d0d0d0"
+    gridwidth: 0.5
+    showline: true
+    linecolor: "#808080"
+    tickcolor: "#2c2c2c"
+  yaxis:
+    showgrid: true
+    gridcolor: "#d0d0d0"
+    gridwidth: 0.5
+    showline: true
+    linecolor: "#808080"
+    tickcolor: "#2c2c2c"
+    side: "right"
+
+candlestick:
+  increasing_line_color: "#008000"
+  increasing_fillcolor: "#90ee90"
+  decreasing_line_color: "#ff0000"
+  decreasing_fillcolor: "#ffb3b3"
+  line_width: 1
+  whiskerwidth: 0
+
+level:
+  default_color: "#8b4513"
+  default_width: 1.5
+  default_dash: "solid"
+  opacity: 0.7
+
+box:
+  default_fillcolor: "rgba(255, 255, 0, 0.3)"
+  default_line_color: "#ffd700"
+  default_line_width: 1
+  default_line_dash: "solid"
+
+indicator:
+  default_color: "#4169e1"
+  default_width: 1.5
+  default_mode: "lines"
+
+shade:
+  default_fillcolor: "rgba(128, 128, 128, 0.2)"
+  default_line_width: 0
+
+trade:
+  entry_marker:
+    symbol: "triangle-up"
+    size: 10
+    color: "#008000"
+  exit_marker:
+    symbol: "triangle-down"
+    size: 10
+    color: "#ff0000"
+  connection_line:
+    color: "#696969"
+    width: 1
+    dash: "dot"

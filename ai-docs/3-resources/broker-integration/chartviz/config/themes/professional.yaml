@@ -1,0 +1,75 @@
+# Professional Theme Configuration
+name: "Professional"
+description: "Professional theme for client presentations"
+
+chart_layout:
+  background_color: "#fdfdfd"
+  paper_bgcolor: "#fdfdfd"
+  plot_bgcolor: "#ffffff"
+  font_family: "Helvetica, Arial, sans-serif"
+  font_size: 13
+  font_color: "#1a1a1a"
+  showlegend: false
+  margin:
+    l: 80
+    r: 60
+    t: 60
+    b: 60
+  xaxis:
+    showgrid: true
+    gridcolor: "#eeeeee"
+    gridwidth: 1
+    showline: true
+    linecolor: "#cccccc"
+    tickcolor: "#1a1a1a"
+  yaxis:
+    showgrid: true
+    gridcolor: "#eeeeee"
+    gridwidth: 1
+    showline: true
+    linecolor: "#cccccc"
+    tickcolor: "#1a1a1a"
+    side: "right"
+
+candlestick:
+  increasing_line_color: "#0d7377"
+  increasing_fillcolor: "#14a085"
+  decreasing_line_color: "#a4161a"
+  decreasing_fillcolor: "#ba181b"
+  line_width: 1.5
+  whiskerwidth: 0
+
+level:
+  default_color: "#f77f00"
+  default_width: 2.5
+  default_dash: "solid"
+  opacity: 0.85
+
+box:
+  default_fillcolor: "rgba(67, 56, 202, 0.1)"
+  default_line_color: "#4338ca"
+  default_line_width: 2
+  default_line_dash: "solid"
+
+indicator:
+  default_color: "#3730a3"
+  default_width: 2
+  default_mode: "lines"
+
+shade:
+  default_fillcolor: "rgba(168, 85, 247, 0.08)"
+  default_line_width: 0
+
+trade:
+  entry_marker:
+    symbol: "triangle-up"
+    size: 13
+    color: "#0d7377"
+  exit_marker:
+    symbol: "triangle-down" 
+    size: 13
+    color: "#a4161a"
+  connection_line:
+    color: "#6b7280"
+    width: 1.5
+    dash: "dash"

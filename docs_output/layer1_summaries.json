@@ -1,0 +1,67 @@
+[
+  {
+    "file": "/tmp/docugen_test/WorkerPool.cs",
+    "summary": "This file implements a worker pool for managing background tasks, enabling asynchronous execution of multiple operations. It uses a BlockingCollection to handle task enqueues and cancellation.",
+    "purpose": "Manages background task execution across multiple workers",
+    "category": "Service Layer",
+    "key_classes": [
+      "WorkerPool",
+      "BlockingCollection"
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/OllamaService.cs",
+    "summary": "This service handles API requests to the Ollama API, providing async methods for fetching data from the local server.",
+    "purpose": "Business logic for interacting with the Ollama API",
+    "category": "Service Layer",
+    "key_classes": [
+      "OllamaService"
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/MarkdownExtractor.cs",
+    "summary": "This file extracts code blocks from markdown files, identifying and serializing them into JSON format for further processing. It handles directory traversal and uses regular expressions to detect code blocks with syntax highlighting.",
+    "purpose": "Extracts and serializes code blocks from markdown files",
+    "category": "Service Layer",
+    "key_classes": [
+      "MarkdownExtractor",
+      "I MarkdownExtractor"
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/LocalDatabaseService.cs",
+    "summary": "This file manages the local database operations, providing methods to connect to the database, test connections, and initialize the database with migration logic. It serves as the entry point for database interactions in the application.",
+    "purpose": "Database initialization and management for local database operations",
+    "category": "Data Access",
+    "key_classes": []
+  },
+  {
+    "file": "/tmp/docugen_test/HttpService.cs",
+    "summary": "This service handles HTTP requests, providing asynchronous methods for GET and POST operations to interact with external APIs.",
+    "purpose": "Primary responsibility of this file in the codebase",
+    "category": "Service Layer",
+    "key_classes": [
+      "HttpService"
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/FlattenAllService.cs",
+    "summary": "This service orchestrates the flattening of code artifacts, processing directories with Git repositories and executing the code flattener tool to generate Markdown output. It manages the workflow from directory scanning to output generation and error handling.",
+    "purpose": "Flatten-All process for code artifacts",
+    "category": "Service Layer",
+    "key_classes": [
+      "FlattenAllService",
+      "IRenderer",
+      "InputProcessor"
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/ChromaDbService.cs",
+    "summary": "This service handles content item upsert operations by sending JSON data to a local ChromaDB instance. It provides asynchronous methods for adding and retrieving content items with metadata.",
+    "purpose": "Business logic for content item storage and retrieval in the ChromaDB system",
+    "category": "Service Layer",
+    "key_classes": [
+      "ChromaDbService"
+    ]
+  }
+]

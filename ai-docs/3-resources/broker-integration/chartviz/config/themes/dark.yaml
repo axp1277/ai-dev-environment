@@ -1,0 +1,75 @@
+# Dark Theme Configuration
+name: "Dark"
+description: "Dark theme with black background and contrasting colors"
+
+chart_layout:
+  background_color: "#0a0a0a"
+  paper_bgcolor: "#0a0a0a"
+  plot_bgcolor: "#1a1a1a"
+  font_family: "Arial, sans-serif"
+  font_size: 12
+  font_color: "#e0e0e0"
+  showlegend: false
+  margin:
+    l: 60
+    r: 40
+    t: 40
+    b: 40
+  xaxis:
+    showgrid: true
+    gridcolor: "#2a2a2a"
+    gridwidth: 1
+    showline: true
+    linecolor: "#3a3a3a"
+    tickcolor: "#e0e0e0"
+  yaxis:
+    showgrid: true
+    gridcolor: "#2a2a2a"
+    gridwidth: 1
+    showline: true
+    linecolor: "#3a3a3a"
+    tickcolor: "#e0e0e0"
+    side: "right"
+
+candlestick:
+  increasing_line_color: "#00ff88"
+  increasing_fillcolor: "#00ff88"
+  decreasing_line_color: "#ff4444"
+  decreasing_fillcolor: "#ff4444"
+  line_width: 1
+  whiskerwidth: 0
+
+level:
+  default_color: "#ffcc00"
+  default_width: 2
+  default_dash: "solid"
+  opacity: 0.9
+
+box:
+  default_fillcolor: "rgba(0, 150, 255, 0.15)"
+  default_line_color: "#0096ff"
+  default_line_width: 2
+  default_line_dash: "solid"
+
+indicator:
+  default_color: "#00ccff"
+  default_width: 2
+  default_mode: "lines"
+
+shade:
+  default_fillcolor: "rgba(255, 102, 255, 0.1)"
+  default_line_width: 0
+
+trade:
+  entry_marker:
+    symbol: "triangle-up"
+    size: 14
+    color: "#00ff88"
+  exit_marker:
+    symbol: "triangle-down"
+    size: 14
+    color: "#ff4444"
+  connection_line:
+    color: "#888888"
+    width: 1
+    dash: "dash"

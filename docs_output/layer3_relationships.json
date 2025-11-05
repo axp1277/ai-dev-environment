@@ -1,0 +1,132 @@
+[
+  {
+    "file": "/tmp/docugen_test/WorkerPool.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "/tmp/docugen_test/WorkerPool.cs",
+        "classes_used": [],
+        "purpose": "This file uses the BlockingCollection to manage background tasks and processes them in a worker pool.",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "/tmp/docugen_test/WorkerPool.cs",
+        "how_used": "Invoked to process order creation, updates, and queries"
+      }
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/OllamaService.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "/tmp/docugen_test/OllamaService.cs",
+        "classes_used": [],
+        "purpose": "This service uses HttpClient to make API calls",
+        "relationship_type": "Dependency Injection"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "/tmp/docugen_test/OllamaService.cs",
+        "how_used": "Invoked to retrieve data from the Ollama API"
+      }
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/MarkdownExtractor.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "/tmp/docugen_test/MarkdownExtractor.cs",
+        "classes_used": [],
+        "purpose": "This file uses the Repository pattern to abstract data access for code block extraction",
+        "relationship_type": "Composition"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "/tmp/docugen_test/MarkdownExtractor.cs",
+        "how_used": "Invoked to process code block extraction from markdown files"
+      }
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/HttpService.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "/tmp/docugen_test/HttpService.cs",
+        "classes_used": [],
+        "purpose": "This file uses HttpClient to perform HTTP requests",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "/tmp/docugen_test/HttpService.cs",
+        "classes_used": [],
+        "purpose": "This file uses HttpClient to perform HTTP requests",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "/tmp/docugen_test/HttpService.cs",
+        "how_used": "Invoked to process HTTP requests"
+      }
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/FlattenAllService.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "RepoScribe.Core.Abstractions.IRenderer.cs",
+        "classes_used": [],
+        "purpose": "Provides interface for rendering code artifacts",
+        "relationship_type": "Interface"
+      },
+      {
+        "file": "RepoScribe.Core.Helpers.PathUtility.cs",
+        "classes_used": [],
+        "purpose": "Utility class for path manipulation",
+        "relationship_type": "Usage"
+      },
+      {
+        "file": "RepoScribe.Core.Utilities.InputProcessor.cs",
+        "classes_used": [],
+        "purpose": "Handles input processing for code flattening",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "RepoScribe.Core.Services.FlattenAllService.cs",
+        "how_used": "Invoked to process directories and flatten code artifacts"
+      },
+      {
+        "file": "RepoScribe.Core.Services.FlattenAllService.cs",
+        "how_used": "Used to retrieve directory information and process files"
+      }
+    ]
+  },
+  {
+    "file": "/tmp/docugen_test/ChromaDbService.cs",
+    "architectural_role": "Service Layer",
+    "dependencies": [
+      {
+        "file": "/tmp/docugen_test/ChromaDbService.cs",
+        "classes_used": [],
+        "purpose": "This file uses HttpClient for HTTP requests and relies on the ContentItem class for data representation.",
+        "relationship_type": "Usage"
+      }
+    ],
+    "dependents": [
+      {
+        "file": "/tmp/docugen_test/ChromaDbService.cs",
+        "how_used": "Invoked to upsert content items into ChromaDB"
+      }
+    ]
+  }
+]

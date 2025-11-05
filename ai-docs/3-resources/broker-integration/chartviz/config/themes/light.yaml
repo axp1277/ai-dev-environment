@@ -1,0 +1,75 @@
+# Light Theme Configuration
+name: "Light"
+description: "Light theme with white background"
+
+chart_layout:
+  background_color: "#ffffff"
+  paper_bgcolor: "#ffffff"
+  plot_bgcolor: "#fafafa"
+  font_family: "Arial, sans-serif"
+  font_size: 12
+  font_color: "#333333"
+  showlegend: false
+  margin:
+    l: 60
+    r: 40
+    t: 40
+    b: 40
+  xaxis:
+    showgrid: true
+    gridcolor: "#e0e0e0"
+    gridwidth: 1
+    showline: true
+    linecolor: "#cccccc"
+    tickcolor: "#333333"
+  yaxis:
+    showgrid: true
+    gridcolor: "#e0e0e0"
+    gridwidth: 1
+    showline: true
+    linecolor: "#cccccc"
+    tickcolor: "#333333"
+    side: "right"
+
+candlestick:
+  increasing_line_color: "#2e7d32"
+  increasing_fillcolor: "#4caf50"
+  decreasing_line_color: "#c62828"
+  decreasing_fillcolor: "#f44336"
+  line_width: 1
+  whiskerwidth: 0
+
+level:
+  default_color: "#ff9800"
+  default_width: 2
+  default_dash: "solid"
+  opacity: 0.8
+
+box:
+  default_fillcolor: "rgba(33, 150, 243, 0.2)"
+  default_line_color: "#1976d2"
+  default_line_width: 2
+  default_line_dash: "solid"
+
+indicator:
+  default_color: "#1976d2"
+  default_width: 2
+  default_mode: "lines"
+
+shade:
+  default_fillcolor: "rgba(156, 39, 176, 0.15)"
+  default_line_width: 0
+
+trade:
+  entry_marker:
+    symbol: "triangle-up"
+    size: 12
+    color: "#2e7d32"
+  exit_marker:
+    symbol: "triangle-down"
+    size: 12
+    color: "#c62828"
+  connection_line:
+    color: "#757575"
+    width: 1
+    dash: "dash"

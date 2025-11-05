@@ -1,0 +1,84 @@
+# ChartViz Default Configuration
+chart_layout:
+  background_color: "#1e1e1e"
+  paper_bgcolor: "#1e1e1e"
+  plot_bgcolor: "#1e1e1e"
+  font_family: "Arial, sans-serif"
+  font_size: 12
+  font_color: "#ffffff"
+  showlegend: false
+  margin:
+    l: 60
+    r: 40
+    t: 40
+    b: 40
+  xaxis:
+    showgrid: true
+    gridcolor: "#333333"
+    gridwidth: 1
+    showline: true
+    linecolor: "#444444"
+    tickcolor: "#ffffff"
+  yaxis:
+    showgrid: true
+    gridcolor: "#333333"
+    gridwidth: 1
+    showline: true
+    linecolor: "#444444"
+    tickcolor: "#ffffff"
+    side: "right"
+
+candlestick:
+  increasing_line_color: "#26a69a"
+  increasing_fillcolor: "#26a69a"
+  decreasing_line_color: "#ef5350"
+  decreasing_fillcolor: "#ef5350"
+  line_width: 1
+  whiskerwidth: 0
+
+level:
+  default_color: "#ffeb3b"
+  default_width: 2
+  default_dash: "solid"
+  opacity: 0.8
+
+box:
+  default_fillcolor: "rgba(33, 150, 243, 0.2)"
+  default_line_color: "#2196f3"
+  default_line_width: 2
+  default_line_dash: "solid"
+
+indicator:
+  default_color: "#03a9f4"
+  default_width: 2
+  default_mode: "lines"
+
+shade:
+  default_fillcolor: "rgba(156, 39, 176, 0.2)"
+  default_line_width: 0
+
+trade:
+  entry_marker:
+    symbol: "triangle-up"
+    size: 12
+    color: "#4caf50"
+  exit_marker:
+    symbol: "triangle-down"
+    size: 12
+    color: "#f44336"
+  connection_line:
+    color: "#9e9e9e"
+    width: 1
+    dash: "dash"
+
+export:
+  html_config:
+    include_plotlyjs: "cdn"
+    config:
+      displayModeBar: true
+      displaylogo: false
+      modeBarButtonsToRemove: ["lasso2d", "select2d"]
+  png_config:
+    width: 1200
+    height: 600
+    scale: 2

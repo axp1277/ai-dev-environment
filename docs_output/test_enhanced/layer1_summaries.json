@@ -1,0 +1,517 @@
+[
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IInputSource.cs",
+    "summary": "This interface defines the contract for input source operations, providing a method to retrieve a content item.",
+    "purpose": "Defines the contract for input source operations",
+    "category": "Abstraction Layer",
+    "key_classes": [
+      "IInputSource"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IRenderer.cs",
+    "summary": "This interface defines the method for rendering content items into strings.",
+    "purpose": "Defines the contract for rendering content items into strings.",
+    "category": "Abstraction Layer",
+    "key_classes": [
+      "IRenderer"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/IContentExtractor.cs",
+    "summary": "This interface defines the contract for content extraction logic, providing methods to determine if content can be extracted and to extract the content itself.",
+    "purpose": "Core abstraction for content extraction functionality",
+    "category": "Abstraction",
+    "key_classes": [
+      "IContentExtractor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Abstractions/ITemplateRenderer.cs",
+    "summary": "This interface defines the method for rendering content items using templates, providing a standardized way to handle template rendering in the application.",
+    "purpose": "Standard interface for template rendering functionality",
+    "category": "Service Layer",
+    "key_classes": [
+      "ITemplateRenderer"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/WorkerPool.cs",
+    "summary": "This file implements a worker pool for managing background tasks, allowing multiple workers to process tasks concurrently. It provides methods to enqueue tasks and stop the pool.",
+    "purpose": "Concurrent task processing and management",
+    "category": "Service Layer",
+    "key_classes": [
+      "WorkerPool"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/HttpService.cs",
+    "summary": "This service handles HTTP requests, providing methods for retrieving and posting data to external endpoints. It serves as the bridge between the application and the network layer.",
+    "purpose": "Business logic for handling HTTP requests and responses",
+    "category": "Service Layer",
+    "key_classes": [
+      "HttpService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/FlattenAllService.cs",
+    "summary": "This service processes directories to flatten code files, executing the code flattener tool and logging progress and results.",
+    "purpose": "Business logic for flattening code files across directories",
+    "category": "Service Layer",
+    "key_classes": [
+      "FlattenAllService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/OllamaService.cs",
+    "summary": "This service handles API requests to the Ollama API, providing methods for retrieving data from the local server. It serves as the entry point for interacting with the Ollama API.",
+    "purpose": "Business logic for interacting with the Ollama API",
+    "category": "Service Layer",
+    "key_classes": [
+      "OllamaService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/LocalDatabaseService.cs",
+    "summary": "This file provides a local database service implementation for the RepoScribe application, managing database connections and operations for development and production environments. It handles connection testing, database initialization, and migration processes between different environments.",
+    "purpose": "Local database service implementation for development and production environments",
+    "category": "Service Layer",
+    "key_classes": [
+      "LocalDatabaseService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/MarkdownExtractor.cs",
+    "summary": "This file extracts code blocks from markdown files, identifying code snippets with headers and language specifications, and converting them into JSON format for further processing.",
+    "purpose": "Business logic for extracting and converting markdown code blocks into JSON format",
+    "category": "Service Layer",
+    "key_classes": [
+      "MarkdownExtractor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Services/ChromaDbService.cs",
+    "summary": "This service handles content item insertion into ChromaDB using HTTP POST requests, providing asynchronous upsert operations for content metadata and properties.",
+    "purpose": "Business logic for inserting content items into ChromaDB",
+    "category": "Service Layer",
+    "key_classes": [
+      "ChromaDbService"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/PdfFileHandler.cs",
+    "summary": "This file handles PDF file processing, determining if it can be handled and extracting text content for further use. It provides metadata about the PDF file including owner, last modified time, size, and content.",
+    "purpose": "Business logic for PDF file processing and metadata extraction",
+    "category": "Service Layer",
+    "key_classes": [
+      "PdfFileHandler"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ImageFileHandler.cs",
+    "summary": "This file handles image file processing, determining if a given file is an image and extracting metadata for further use.",
+    "purpose": "Image file processing and metadata extraction",
+    "category": "File Handler",
+    "key_classes": [
+      "ImageFileHandler",
+      "IFileHandler"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/IFileHandler.cs",
+    "summary": "This interface defines a handler for file operations, providing methods to check if a file can be processed and to extract metadata. It serves as a contract for file processing logic in the codebase.",
+    "purpose": "File processing contract for handling different file types",
+    "category": "Service Layer",
+    "key_classes": [
+      "IFileHandler"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/SqliteFileHandler.cs",
+    "summary": "This file handles SQLite database file operations, providing methods to check supported extensions, retrieve table names, and extract metadata from SQLite files.",
+    "purpose": "Business logic for handling SQLite database files",
+    "category": "Data Access",
+    "key_classes": [
+      "SqliteFileHandler"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/CodeFileHandler.cs",
+    "summary": "This file provides a handler for processing code files, determining their language, and extracting metadata including owner, last modified time, size, and content.",
+    "purpose": "File processing metadata extraction and language detection",
+    "category": "Service Layer",
+    "key_classes": [
+      "CodeFileHandler",
+      "IFileHandler"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/GitHelper.cs",
+    "summary": "This file provides methods to retrieve repository metadata, including URL, author, and README content, using the LibGit2Sharp library.",
+    "purpose": "Repository metadata retrieval and management",
+    "category": "Service Layer",
+    "key_classes": [
+      "GitHelper"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/InputProcessor.cs",
+    "summary": "This class processes input strings by determining the appropriate content extractor based on file extension or name, then extracting relevant content.",
+    "purpose": "Business logic for content extraction and processing",
+    "category": "Helper",
+    "key_classes": [
+      "InputProcessor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Helpers/FileHelper.cs",
+    "summary": "This file provides a helper class for processing files, determining the appropriate file handler based on the file extension, and returning the corresponding file metadata. It serves as a bridge between the file system and the file processing logic.",
+    "purpose": "File processing logic for determining appropriate file handlers and returning metadata",
+    "category": "Utility",
+    "key_classes": [
+      "FileHelper"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Renderers/MarkdownRenderer.cs",
+    "summary": "This file implements a markdown renderer that processes content items and generates formatted output based on specified templates. It handles code, image, pdf, and repository content items, applying templates and formatting rules to produce readable output.",
+    "purpose": "Business logic for rendering different content types into formatted output",
+    "category": "Renderer",
+    "key_classes": [
+      "MarkdownRenderer"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/CodeContentItem.cs",
+    "summary": "This file implements a content item class for storing and managing code-related data, providing ingestion and saving functionality to local and remote databases.",
+    "purpose": "Business logic for code content management",
+    "category": "Service Layer",
+    "key_classes": [
+      "CodeContentItem"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/PdfContentItem.cs",
+    "summary": "This file defines a class for managing PDF content items, providing methods to ingest and save content using local and cloud databases.",
+    "purpose": "Business logic for handling PDF content ingestion and storage",
+    "category": "Service Layer",
+    "key_classes": [
+      "PdfContentItem"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/RepositoryContentItem.cs",
+    "summary": "This file defines a repository content item class that manages repository data, including URL, author, readme, and nested files. It handles ingestion and saving operations with async methods.",
+    "purpose": "Business logic for managing repository content items and nested files",
+    "category": "Service Layer",
+    "key_classes": [
+      "RepositoryContentItem"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ImageContentItem.cs",
+    "summary": "This file defines a class for handling image content items, including metadata and image data. It provides methods for ingesting and saving content with support for database operations.",
+    "purpose": "Business logic for managing image content items with ingestion and saving functionality",
+    "category": "Service Layer",
+    "key_classes": [
+      "ImageContentItem"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/ContentItems/ContentItem.cs",
+    "summary": "This file defines the core data model for content items, providing essential properties and methods for ingestion, saving, and rendering. It serves as the foundation for managing content in the system.",
+    "purpose": "Core data model for content items",
+    "category": "Model",
+    "key_classes": [
+      "ContentItem"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/CacheEntry.cs",
+    "summary": "This class represents a cache entry containing information about keywords and cluster indices. It includes properties for storing and retrieving key word embeddings and cluster index data.",
+    "purpose": "Data model for cache entries containing keyword and cluster index information",
+    "category": "Data Model",
+    "key_classes": [
+      "CacheEntry"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/RepositoryMetadata.cs",
+    "summary": "This file defines a class representing metadata for a repository, containing properties for URL, author, readme, and a list of file metadata. It serves as a data model for storing repository information and file details.",
+    "purpose": "Data model for repository metadata and file information",
+    "category": "Model",
+    "key_classes": [
+      "RepositoryMetadata"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/LineContent.cs",
+    "summary": "This class represents line content data, containing a number and a content string. It serves as a data model for storing and retrieving line content in the system.",
+    "purpose": "Data model for line content storage and retrieval",
+    "category": "Model",
+    "key_classes": [
+      "LineContent"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/FileMetadata.cs",
+    "summary": "This file defines a data model for storing metadata about files, including path, owner, modification date, size, language, content, and line details.",
+    "purpose": "Data model for file metadata storage and retrieval",
+    "category": "Data Model",
+    "key_classes": [
+      "FileMetadata"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Metadata.cs",
+    "summary": "This class defines a metadata object that stores information about files or folders, including path, owner, last modified date, size, language, and content.",
+    "purpose": "Stores metadata for files and folders in the data model",
+    "category": "Data Model",
+    "key_classes": [
+      "Metadata"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/AppDbContext.cs",
+    "summary": "This file defines the database context for the RepoScribe application, managing the mapping between the application's domain models and the database. It includes DbSet properties for various content types and handles the configuration of the database schema using Fluent API.",
+    "purpose": "Database context for the RepoScribe application",
+    "category": "Data Access",
+    "key_classes": [
+      "AppDbContext"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/ClusterIndex.cs",
+    "summary": "This file defines a data model representing cluster indices with cluster ID, index ID, and member embeddings. It serves as the core data structure for managing cluster-related operations in the database.",
+    "purpose": "Core data model for cluster index management in the database",
+    "category": "Model",
+    "key_classes": [
+      "ClusterIndex"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/ConfigurationManager.cs",
+    "summary": "This file manages configuration settings for the application, prioritizing user-specific configurations over default settings and environment variables.",
+    "purpose": "Configuration management for the application",
+    "category": "Utility",
+    "key_classes": [
+      "ConfigurationManager"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/HashUtility.cs",
+    "summary": "This utility class provides methods for generating content hashes and unique identifiers using SHA-256 encryption. It is used for secure data verification and session management.",
+    "purpose": "Secure data hashing and unique identifier generation",
+    "category": "Utility",
+    "key_classes": [
+      "HashUtility"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/Logger.cs",
+    "summary": "This file provides logging functionality, initializing a logger to write logs to the console and a file. It manages the lifecycle of the logging system.",
+    "purpose": "Logging initialization and management",
+    "category": "Utility",
+    "key_classes": [
+      "Logger"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/RepositoryManager.cs",
+    "summary": "This file manages the configuration of repositories, loading and saving a list of repository paths from a JSON file. It provides a simple interface for persisting and retrieving repository information.",
+    "purpose": "Configuration management for repository paths",
+    "category": "Utility",
+    "key_classes": [
+      "RepositoryManager"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/SetupManager.cs",
+    "summary": "This file manages the setup of application directories and configuration files for the RepoScribe application. It determines the program data and configuration paths based on user environment settings and ensures necessary directories are created if they don't exist.",
+    "purpose": "Handles the initialization of application directories and configuration files",
+    "category": "Utility",
+    "key_classes": [
+      "SetupManager",
+      "ProgramDataPaths",
+      "ConfigPaths",
+      "PathData",
+      "PathDataPair"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Utilities/PathUtility.cs",
+    "summary": "This utility class provides methods to convert between dotted path representations and actual file paths, handling directory separators for consistent path formatting.",
+    "purpose": "Path formatting and conversion utilities",
+    "category": "Utility",
+    "key_classes": [
+      "PathUtility"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/PdfContentExtractor.cs",
+    "summary": "This file implements a PDF content extractor that identifies supported file types, extracts text from PDFs, and returns structured content with metadata and lines of text.",
+    "purpose": "Business logic for extracting and processing PDF content files",
+    "category": "Content Extractor",
+    "key_classes": [
+      "PdfContentExtractor",
+      "IContentExtractor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/SqliteContentExtractor.cs",
+    "summary": "This file implements a content extractor for SQLite databases, identifying supported file types and extracting table names and basic metadata for further processing.",
+    "purpose": "Business logic for extracting SQLite database metadata and content",
+    "category": "Data Access",
+    "key_classes": [
+      "SqliteContentExtractor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/FileHandlers/ContentExtractors/ImageContentExtractor.cs",
+    "summary": "This file implements an image content extractor that identifies supported image formats, extracts metadata, and returns basic information about image files.",
+    "purpose": "Image content extraction and metadata retrieval",
+    "category": "Content Extractor",
+    "key_classes": [
+      "ImageContentExtractor",
+      "IContentExtractor"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/CodeBlock.cs",
+    "summary": "This class represents a markdown code block with language and content properties, providing methods to format and render code snippets.",
+    "purpose": "Business logic for rendering and formatting markdown code blocks",
+    "category": "Data Model",
+    "key_classes": [
+      "CodeBlock",
+      "MarkdownContent"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/Header.cs",
+    "summary": "This class represents a markdown header with a specified level and text content, providing methods to construct and format markdown headers.",
+    "purpose": "Business logic for markdown header content creation and formatting",
+    "category": "Data Model",
+    "key_classes": [
+      "Header",
+      "MarkdownContent"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownContent.cs",
+    "summary": "This file defines a base class for markdown content models, providing a method to convert content to markdown format and a virtual method for template application. It serves as the foundation for different markdown content types in the application.",
+    "purpose": "Base class for markdown content models",
+    "category": "Data Model",
+    "key_classes": [
+      "MarkdownContent",
+      "IOutputTemplating"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/IOutputTemplating.cs",
+    "summary": "This interface defines the method for applying a template to a markdown document, enabling dynamic content generation.",
+    "purpose": "Business logic for template application in markdown documents",
+    "category": "Service Layer",
+    "key_classes": [
+      "IOutputTemplating"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Markdown/MarkdownDocument.cs",
+    "summary": "This class manages markdown content in a document, providing methods to add content and convert the document to a string representation.",
+    "purpose": "Business logic for managing markdown document content",
+    "category": "Data Model",
+    "key_classes": [
+      "MarkdownDocument"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/Domain.cs",
+    "summary": "This enum defines the different types of domains for user account management, including protected, personal, interpersonal, and professional categories.",
+    "purpose": "Defines domain types for user account management",
+    "category": "Enum",
+    "key_classes": [
+      "Domain"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/DataModels/Enums/ContextualInputSource.cs",
+    "summary": "This enum defines the possible sources for contextual input data, including host files, GitHub, browsing history, email, local files, SMS, and others. It serves as a configuration layer for data input mechanisms.",
+    "purpose": "Configuration for contextual input data sources",
+    "category": "Enum",
+    "key_classes": [
+      "ContextualInputSource"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ContentItemEntity.cs",
+    "summary": "This file defines the core data model for content items, including essential properties like ID, path, owner, last modified time, size, language, content, domain, and contextual source. It serves as the foundation for managing content in the database.",
+    "purpose": "Core data model for content items in the database",
+    "category": "Model",
+    "key_classes": [
+      "ContentItemEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ImageContentItemEntity.cs",
+    "summary": "This entity represents image content items with metadata and binary data, providing storage for image-related information in the database.",
+    "purpose": "Data model for storing image content items with metadata and binary data",
+    "category": "Model",
+    "key_classes": [
+      "ImageContentItemEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/PdfContentItemEntity.cs",
+    "summary": "This file defines a database entity representing a PDF content item, inheriting from the base content item entity. It includes a moved lines property.",
+    "purpose": "Database entity for storing PDF content items",
+    "category": "Data Access",
+    "key_classes": [
+      "PdfContentItemEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/RepositoryContentItemEntity.cs",
+    "summary": "This file defines a repository content item entity with properties for URL, author, readme, and files, including a collection of child content items.",
+    "purpose": "Data model for repository content items with child file references",
+    "category": "Model",
+    "key_classes": [
+      "RepositoryContentItemEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/CodeContentItemEntity.cs",
+    "summary": "This file defines a data model for code content items, inheriting from a base class that handles common properties.",
+    "purpose": "Data model for code content items",
+    "category": "Model",
+    "key_classes": [
+      "CodeContentItemEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/QueryEntity.cs",
+    "summary": "This file defines an abstract base class for query entities, providing common properties and methods for managing user queries and responses. It serves as a foundation for specific query types within the database system.",
+    "purpose": "Base class for user query and response entities",
+    "category": "Data Access",
+    "key_classes": [
+      "QueryEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/ConversationEntity.cs",
+    "summary": "This file defines the ConversationEntity class representing a conversation in the database, including properties for unique identifier, queries, name, timestamp, provider, URL, and topics.",
+    "purpose": "Data model for conversation entities in the database",
+    "category": "Model",
+    "key_classes": [
+      "ConversationEntity"
+    ]
+  },
+  {
+    "file": "data/sample_codebase/RepoScribe-master/RepoScribe.Core/Database/Entities/LineContentEntity.cs",
+    "summary": "This entity represents line content in a document, containing fields for unique identifier, number, content, and a foreign key to the content item.",
+    "purpose": "Data model for line content in document processing",
+    "category": "Model",
+    "key_classes": [
+      "LineContentEntity"
+    ]
+  }
+]

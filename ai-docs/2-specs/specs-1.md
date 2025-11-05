@@ -1,228 +1,264 @@
-# Multi-Timeframe Level Detector with License Management System - Specification
+# Specification: Incremental Pipeline Refactoring Workflow
 
 ## Vision
 
-Create a high-performance, license-controlled Rust-based framework for technical analysis indicators that can be used across multiple languages (Python, C#, Rust) while maintaining proprietary source code protection through compiled binaries and sophisticated license management.
+Create a systematic, incremental refactoring workflow for Python data pipelines that balances three critical objectives:
+1. **Code Quality**: Improve code maintainability, readability, and robustness through structured refactoring
+2. **Team Continuity**: Maintain understanding and familiarity for existing engineers without disrupting their workflow
+3. **Engineer Onboarding**: Enable new engineers to learn and understand the codebase through hands-on, low-risk refactoring tasks
 
-### Objectives
+This approach ensures that refactoring serves as both a technical improvement process and an effective onboarding mechanism, executed in small, supervised, incremental steps.
 
-- Build a fast, compiled Rust backend for heavy computational tasks (candlestick processing, level extraction)
-- Implement flexible license management with tier-based and function-specific access controls
-- Create a clean separation between computation (Rust) and visualization (Python/Plotly)
-- Enable cross-language interoperability through DLL/shared library compilation
-- Maintain source code privacy through binary distribution
-- Provide a centralized license management CLI tool for easy administration
+## Objectives
 
-### Success Metrics
+- Refactor pipeline code incrementally, starting with low-risk improvements
+- Onboard new engineer through practical engagement with the codebase
+- Minimize disruption to existing team members familiar with current implementation
+- Progress from low-risk to higher-risk refactoring tasks as understanding deepens
+- Maintain supervisor approval at each stage to ensure alignment
+- Create a reusable, agnostic refactoring framework applicable to any Python project
 
-- All indicator functions process OHLC data efficiently in Rust
-- License checking adds minimal performance overhead
-- Functions can be selectively enabled/disabled based on license tiers
-- Single codebase can be used across Python, C#, and native Rust
-- License management CLI provides complete CRUD operations for licenses and functions
-- Database schema supports both local SQLite and cloud migration
+## Success Metrics
 
-## Architecture Overview
+- All low-risk refactoring tasks (logging, docstrings, type hints) completed without breaking changes
+- New engineer demonstrates understanding of codebase architecture and functionality
+- Existing team members successfully adapt to incremental changes
+- Each refactoring phase approved by supervisor before implementation
+- Code quality metrics improve (type coverage, documentation coverage, logging completeness)
+- Zero production incidents caused by refactoring changes
 
-```mermaid
-graph TD
-    A[Rust Core Engine] --> B[License Checker Module]
-    A --> C[Indicator Functions]
-    C --> D[Bullish Imbalance]
-    C --> E[Order Block]
-    C --> F[Other Indicators]
-    
-    G[License Management CLI] --> H[SQLite Database]
-    H --> I[Functions Table]
-    H --> J[Licenses Table] 
-    H --> K[License-Function Mapping]
-    
-    B --> H
-    
-    L[Python Frontend] --> A
-    M[C# NinjaScript] --> A
-    N[Native Rust] --> A
-```
+---
 
 ## Tasks
 
-=4 Task 1.0: Database Schema Design and Implementation
-* =4 1.1: Create SQLite database schema with functions table (id, name)
-* =4 1.2: Create licenses table (id, key, tier)
-* =4 1.3: Create license_function_map table (license_id, function_id)
-* =4 1.4: Implement database connection and basic CRUD operations using rusqlite
-* =4 1.5: Create database initialization scripts and sample data
+### Phase 1: Low-Risk Refactoring (Foundation)
 
-=4 Task 2.0: License Checker Module Implementation
-* =4 2.1: Create license_checker.rs module with database query functions
-* =4 2.2: Implement check_license(function_name: &str) -> Result<(), &str>
-* =4 2.3: Add function to query database for license-function mappings
-* =4 2.4: Implement tier-based and individual function license validation
-* =4 2.5: Add error handling for database connection failures and invalid licenses
+=4 **Task 1.0: Implement Professional Logging System**
+* =4 1.1: Review current logging implementation (if any) and identify gaps
+* =4 1.2: Create `logger.py` module with Loguru configuration
+* =4 1.3: Configure logging to output to both file and terminal
+* =4 1.4: Define log levels appropriate for pipeline stages (DEBUG, INFO, WARNING, ERROR)
+* =4 1.5: Integrate logger into existing pipeline functions without modifying core logic
+* =4 1.6: Test logging output in development environment
+* =4 1.7: Document logging conventions for team
 
-=4 Task 3.0: Core Indicator Function Structure
-* =4 3.1: Define OHLC data structure for candlestick data
-* =4 3.2: Create base indicator function signature (ohlc_data: &[Ohlc], index: usize) -> Result<bool, &str>
-* =4 3.3: Implement bullish_imbalance indicator with license check
-* =4 3.4: Implement order_block indicator with license check
-* =4 3.5: Create template for additional indicator functions
+=4 **Task 2.0: Add Documentation with Docstrings**
+* =4 2.1: Review existing functions and classes to understand current implementation
+* =4 2.2: Document all public functions with clear, concise docstrings (Google or NumPy style)
+* =4 2.3: Document all classes with purpose, attributes, and usage examples
+* =4 2.4: Keep docstrings brief and focused on "what" and "why", not "how"
+* =4 2.5: Review docstrings for consistency and clarity
+* =4 2.6: Obtain supervisor approval for documentation approach
 
-=4 Task 4.0: License Management CLI Tool
-* =4 4.1: Create new Rust binary project for license management (lk command)
-* =4 4.2: Implement 'lk new' command to create new license keys
-* =4 4.3: Implement 'lk add-function' command to add function names to database
-* =4 4.4: Implement 'lk associate' command to link licenses with functions
-* =4 4.5: Implement 'lk list' command to display licenses and associated functions
-* =4 4.6: Implement 'lk remove' command to delete licenses or functions
-* =4 4.7: Add CLI argument parsing and help documentation
+=4 **Task 3.0: Add Type Hints**
+* =4 3.1: Review function signatures to understand current parameter and return types
+* =4 3.2: Add type hints to all function parameters
+* =4 3.3: Add return type hints to all functions
+* =4 3.4: Add type hints to class attributes
+* =4 3.5: Use appropriate typing imports (List, Dict, Optional, Union, etc.)
+* =4 3.6: Run type checker (mypy) to validate type hints
+* =4 3.7: Resolve any type checking errors or inconsistencies
 
-=4 Task 5.0: Cross-Language Integration Setup
-* =4 5.1: Configure Rust project for DLL/shared library compilation
-* =4 5.2: Create C-compatible function interfaces for external language binding
-* =4 5.3: Test Python integration using ctypes or PyO3
-* =4 5.4: Document C# P/Invoke integration patterns
-* =4 5.5: Create example usage scripts for each target language
+### Phase 2: Mid-Risk Refactoring (Code Organization)
 
-=4 Task 6.0: Testing and Validation
-* =4 6.1: Create unit tests for license checker functionality
-* =4 6.2: Create integration tests for indicator functions with various license scenarios
-* =4 6.3: Test CLI tool commands with various database states
-* =4 6.4: Validate cross-language integration with sample applications
-* =4 6.5: Performance benchmarking of license checking overhead
+=4 **Task 4.0: Analyze Code Structure and Identify Improvement Opportunities**
+* =4 4.1: Review overall pipeline architecture and module organization
+* =4 4.2: Identify code duplication and opportunities for consolidation
+* =4 4.3: Identify functions that violate single responsibility principle
+* =4 4.4: Document proposed organizational improvements
+* =4 4.5: Present analysis and proposed changes to supervisor for approval
+* =4 4.6: Prioritize organizational changes by risk level
 
-=4 Task 7.0: Documentation and Distribution
-* =4 7.1: Create user guide for license management CLI
-* =4 7.2: Document indicator function API and usage patterns  
-* =4 7.3: Create integration examples for Python, C#, and Rust
-* =4 7.4: Document build process for creating distributable binaries
-* =4 7.5: Create cloud migration guide for database
+=4 **Task 5.0: Refactor Function Organization**
+* =4 5.1: Review current function implementations and dependencies
+* =4 5.2: Extract reusable utility functions into separate module
+* =4 5.3: Group related functions into logical modules
+* =4 5.4: Maintain backward compatibility with existing function calls
+* =4 5.5: Update imports across codebase incrementally
+* =4 5.6: Test functionality after each organizational change
+* =4 5.7: Document new module structure for team
 
-## Technical Requirements
+=4 **Task 6.0: Refactor Class Structure**
+* =4 6.1: Review existing class implementations and responsibilities
+* =4 6.2: Identify classes with multiple responsibilities
+* =4 6.3: Split complex classes into smaller, focused classes where appropriate
+* =4 6.4: Ensure classes follow SOLID principles (especially Single Responsibility)
+* =4 6.5: Update instantiation and usage patterns incrementally
+* =4 6.6: Test each class refactor in isolation
+* =4 6.7: Obtain team feedback on new class structure
 
-### Input/Output Specifications
-- **Indicator Function Inputs**: OHLC data vector, current bar index, optional parameters
-- **Indicator Function Outputs**: Boolean result or structured data based on indicator type
-- **License Function**: No external inputs (reads from internal config/database)
+### Phase 3: High-Risk Refactoring (Architectural Improvements)
 
-### Data Structures
-```rust
-pub struct Ohlc {
-    pub timestamp: u64,
-    pub open: f64,
-    pub high: f64,
-    pub low: f64,
-    pub close: f64,
-    pub volume: f64,
-}
-```
+=4 **Task 7.0: Plan Architectural Improvements**
+* =4 7.1: Review overall pipeline flow and identify architectural bottlenecks
+* =4 7.2: Identify opportunities for improved error handling and resilience
+* =4 7.3: Document proposed architectural changes with diagrams
+* =4 7.4: Assess risk and potential breaking changes for each proposal
+* =4 7.5: Create detailed implementation plan with rollback strategies
+* =4 7.6: Present architectural proposal to team and supervisor for approval
+* =4 7.7: Schedule implementation in coordination with team availability
 
-### Database Schema
-```sql
--- Functions table
-CREATE TABLE functions (
-    id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL
-);
+=4 **Task 8.0: Implement Architectural Improvements**
+* =4 8.1: Review approved architectural plan and dependencies
+* =4 8.2: Implement changes incrementally, one component at a time
+* =4 8.3: Create comprehensive tests for new architectural patterns
+* =4 8.4: Run full test suite after each incremental change
+* =4 8.5: Monitor production-like environment for any issues
+* =4 8.6: Document new architectural patterns for team reference
+* =4 8.7: Conduct code review with team before finalizing changes
 
--- Licenses table  
-CREATE TABLE licenses (
-    id INTEGER PRIMARY KEY,
-    key TEXT UNIQUE NOT NULL,
-    tier TEXT
-);
+### Phase 4: Validation and Knowledge Transfer
 
--- License-Function mapping
-CREATE TABLE license_function_map (
-    license_id INTEGER,
-    function_id INTEGER,
-    FOREIGN KEY(license_id) REFERENCES licenses(id),
-    FOREIGN KEY(function_id) REFERENCES functions(id),
-    PRIMARY KEY(license_id, function_id)
-);
-```
+=4 **Task 9.0: Comprehensive Testing and Validation**
+* =4 9.1: Review all refactored code for completeness and quality
+* =4 9.2: Run full test suite and ensure all tests pass
+* =4 9.3: Perform manual testing of pipeline end-to-end
+* =4 9.4: Validate logging output provides adequate observability
+* =4 9.5: Review type checking passes without errors
+* =4 9.6: Confirm documentation is complete and accurate
+* =4 9.7: Obtain final supervisor approval
+
+=4 **Task 10.0: Knowledge Transfer and Documentation**
+* =4 10.1: Create summary document of all refactoring changes
+* =4 10.2: Document lessons learned and best practices discovered
+* =4 10.3: Present refactoring outcomes to team in walkthrough session
+* =4 10.4: Update team onboarding documentation with new structure
+* =4 10.5: Create reference guide for common patterns used in refactored code
+* =4 10.6: Collect team feedback on refactoring process
+* =4 10.7: Document recommendations for future refactoring efforts
+
+---
 
 ## Development Conventions
 
-### Code Quality
-1. Use type hints and proper error handling with Result<T, E> types
-2. Write comprehensive docstrings for all public functions and modules
-3. Follow Rust naming conventions (snake_case for functions, PascalCase for types)
-4. Implement proper input validation for all external interfaces
-5. Use #[cfg(test)] for test modules and maintain high test coverage
+### Code Quality Standards
 
-### Database Operations
-1. Use prepared statements for all database queries to prevent SQL injection
-2. Implement proper connection pooling for concurrent access
-3. Use transactions for operations that modify multiple tables
-4. Handle database errors gracefully with meaningful error messages
+1. **Type Hints**: Use type hints for all function parameters, return values, and class attributes
+2. **Docstrings**: Write clear, concise docstrings following Google or NumPy style conventions
+3. **Naming**: Use descriptive, meaningful names that reflect purpose and scope
+4. **Line Length**: Keep files under 700 lines; split larger files into logical modules
+5. **Complexity**: Maintain low cyclomatic complexity (aim for <10 per function)
+6. **PEP 8**: Follow PEP 8 style guidelines consistently
 
-### License Management
-1. Store license keys securely and validate format consistency
-2. Implement atomic operations for license-function associations
-3. Cache frequently accessed license data for performance
-4. Log license validation attempts for audit purposes
+### Logging Standards
 
-### Cross-Language Compatibility
-1. Use C-compatible function signatures for external bindings
-2. Handle string encoding properly across language boundaries
-3. Implement proper memory management for shared data structures
-4. Document calling conventions for each target language
+1. **Library**: Use Loguru for all logging operations
+2. **Configuration**: Centralize logging configuration in `logger.py`
+3. **Outputs**: Configure both file and terminal logging outputs
+4. **Levels**: Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+5. **Context**: Include relevant context in log messages (function name, parameters, state)
+6. **Structured**: Use structured logging for easier parsing and analysis
 
-### CLI Design
-1. Use clap crate for argument parsing and help generation
-2. Implement consistent error reporting across all commands
-3. Support both interactive and batch operation modes
-4. Provide clear success/failure feedback for all operations
+### Validation and Testing
 
-### Build and Distribution
-1. Create separate build configurations for development and distribution
-2. Use static linking where possible to minimize dependencies
-3. Document compilation flags for optimal performance
-4. Create automated scripts for cross-platform builds
+1. **Framework**: Use pytest for all unit testing
+2. **Validation**: Use Pydantic for data validation and parsing
+3. **Test Location**: Create `tests/` subdirectory within module directories
+4. **Test Structure**: Mirror source directory structure in test directories
+5. **Coverage**: Aim for high test coverage, especially for business logic
+6. **Test Cases**: Include both positive and negative test scenarios
 
-## Environment Setup
+### Package Management
 
-### Dependencies
-- `rusqlite` - SQLite database operations
-- `clap` - CLI argument parsing
-- `serde` - Serialization/deserialization
-- `anyhow` - Error handling
+1. **Tool**: Use `uv` for all package management operations
+2. **Dependencies**: Document all dependencies and their purpose
+3. **Versions**: Pin dependency versions for reproducibility
+4. **Virtual Environment**: Always work within project virtual environment
+5. **Updates**: Test dependency updates in isolation before merging
 
-### Development Environment
-- Rust toolchain with cargo
-- SQLite3 for database inspection
-- Cross-compilation tools for multi-platform builds
+### Incremental Development Process
 
-## Security Considerations
+1. **Review First**: Every task begins with reviewing current implementation
+2. **Small Steps**: Make small, focused changes that can be easily reviewed
+3. **Test Continuously**: Run tests after each incremental change
+4. **Commit Frequently**: Create granular commits with clear messages
+5. **Seek Approval**: Obtain supervisor approval before moving to next phase
+6. **Document Changes**: Update documentation alongside code changes
+7. **Team Communication**: Keep existing team informed of changes through clear commit messages and documentation
 
-1. **License Key Storage**: Keys are compiled into binary, not stored in plain text files
-2. **Function Access Control**: Runtime validation ensures only licensed functions execute
-3. **Database Security**: Use appropriate file permissions for local SQLite database
-4. **Binary Distribution**: Source code remains private through compilation
+### Risk Management
 
-## Future Enhancements
+1. **Risk Assessment**: Evaluate potential breaking changes before implementation
+2. **Rollback Plan**: Have clear rollback strategy for each change
+3. **Staging**: Test changes in development/staging before production
+4. **Incremental Deployment**: Deploy changes incrementally, not all at once
+5. **Monitoring**: Monitor system behavior after each deployment
+6. **Team Coordination**: Coordinate timing of changes with team availability
 
-1. **Cloud Database Migration**: Transition from SQLite to cloud-based license validation
-2. **Advanced License Features**: Time-based licenses, usage tracking, remote revocation
-3. **Additional Indicators**: Expand library with more technical analysis functions
-4. **Performance Optimization**: Implement caching and parallel processing where beneficial
-5. **GUI Management Tool**: Web-based interface for license administration
+---
 
-## Migration Path
+## Process Flow
 
-### Phase 1: Local Development
-- SQLite database with file-based storage
-- Simple CLI for license management
-- Basic indicator functions with license checks
+```mermaid
+graph TD
+    A[Brainstorming Session] --> B[Specification Document]
+    B --> C[Supervisor Approval]
+    C --> D{Approved?}
+    D -->|No| B
+    D -->|Yes| E[Phase 1: Low-Risk Refactoring]
+    E --> F[Logging Implementation]
+    E --> G[Documentation]
+    E --> H[Type Hints]
+    F --> I[Review & Approval]
+    G --> I
+    H --> I
+    I --> J{Phase 1 Approved?}
+    J -->|No| E
+    J -->|Yes| K[Phase 2: Mid-Risk Refactoring]
+    K --> L[Code Organization]
+    L --> M[Review & Approval]
+    M --> N{Phase 2 Approved?}
+    N -->|No| K
+    N -->|Yes| O[Phase 3: High-Risk Refactoring]
+    O --> P[Architectural Improvements]
+    P --> Q[Review & Approval]
+    Q --> R{Phase 3 Approved?}
+    R -->|No| O
+    R -->|Yes| S[Phase 4: Validation]
+    S --> T[Testing & Documentation]
+    T --> U[Final Review]
+    U --> V[Complete]
+```
 
-### Phase 2: Enhanced Features  
-- Additional indicator implementations
-- Cross-language integration testing
-- Performance optimization
+---
 
-### Phase 3: Cloud Integration
-- Database migration to cloud provider
-- Remote license validation
-- Scalable multi-client support
+## Dual Purpose Framework
 
-This specification provides a comprehensive roadmap for implementing the multi-timeframe level detector with sophisticated license management while maintaining the flexibility and performance requirements discussed in the brainstorming session.
+This refactoring workflow serves two parallel and equally important purposes:
+
+### Purpose 1: Code Improvement
+- Enhance code quality through systematic refactoring
+- Improve maintainability with better documentation and type safety
+- Increase observability through professional logging
+- Optimize code organization and architecture
+
+### Purpose 2: Engineer Onboarding
+- Build deep understanding of codebase through hands-on refactoring
+- Learn system architecture by working with existing implementation
+- Develop confidence for future, more complex changes
+- Establish foundation for becoming on-call support engineer
+
+### Balancing Act
+
+The key challenge is maintaining equilibrium between:
+- **Change** (improving the code) and **Stability** (preserving team understanding)
+- **Learning** (onboarding new engineer) and **Efficiency** (minimizing disruption)
+- **Innovation** (better architecture) and **Caution** (avoiding breaking changes)
+
+This is achieved through:
+1. **Incremental progression** from low-risk to high-risk changes
+2. **Continuous approval** from supervisor at phase boundaries
+3. **Clear communication** with existing team through documentation and commits
+4. **Systematic testing** to catch issues early
+5. **Reversible changes** with clear rollback strategies
+
+---
+
+## Notes
+
+- This specification is intentionally agnostic and can be applied to any Python pipeline or codebase
+- Task numbering uses =4 (not started), =� (in progress), =� (completed) status indicators
+- Each phase should be completed and approved before moving to the next
+- The specification emphasizes that review and understanding must precede implementation
+- Low-risk changes (Phase 1) build foundation and familiarity for higher-risk changes (Phases 2-3)
+- Success depends on balancing competing goals: improvement, stability, and onboarding
