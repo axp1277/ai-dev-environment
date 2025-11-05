@@ -14,6 +14,8 @@ Responsibilities:
 """
 
 import json
+import time
+import re
 from pathlib import Path
 from typing import Optional, List, Dict
 from loguru import logger
@@ -43,6 +45,164 @@ def load_refinement_prompt_template() -> str:
     prompt_path = Path(__file__).parent.parent / "prompts" / "refinement_documenter.md"
     with open(prompt_path, 'r', encoding='utf-8') as f:
         return f.read()
+
+
+def call_llm_with_retry(llm_model, prompt: str, element_type: str, element_name: str, max_retries: int = 3) -> Optional[Dict]:
+    """
+    Call LLM with retry logic for robustness.
+
+    Args:
+        llm_model: LLM model instance
+        prompt: The prompt to send
+        element_type: Type of element being refined (for logging)
+        element_name: Name of element being refined (for logging)
+        max_retries: Maximum number of retry attempts
+
+    Returns:
+        Parsed JSON dict or None if all retries fail
+    """
+    for attempt in range(1, max_retries + 1):
+        try:
+            # Make LLM call
+            llm_start = time.time()
+            response = llm_model.invoke(prompt)
+            llm_duration = time.time() - llm_start
+
+            # Extract content
+            content = response.content if hasattr(response, 'content') else str(response)
+
+            # Log response
+            logger.info(
+                f"  [LLM RESPONSE] Refinement - {element_type} {element_name} | "
+                f"Attempt: {attempt}/{max_retries} | Duration: {llm_duration:.2f}s | Response: {len(content)} chars"
+            )
+
+            # Extract and parse JSON
+            json_content = extract_json_from_response(content)
+            doc_data = json.loads(json_content)
+
+            # Success!
+            if attempt > 1:
+                logger.info(f"  [RETRY SUCCESS] Refinement - {element_type} {element_name} succeeded on attempt {attempt}")
+            return doc_data
+
+        except json.JSONDecodeError as e:
+            logger.warning(
+                f"  [JSON PARSE ERROR] Refinement - {element_type} {element_name} | Attempt {attempt}/{max_retries}",
+                error=str(e),
+                error_line=e.lineno if hasattr(e, 'lineno') else None,
+                error_col=e.colno if hasattr(e, 'colno') else None
+            )
+
+            if attempt < max_retries:
+                logger.info(f"  [RETRY] Retrying refinement for {element_type} {element_name} (attempt {attempt + 1}/{max_retries})")
+                continue
+            else:
+                # Final attempt failed - log full content
+                logger.error(
+                    f"  [ALL RETRIES FAILED] Refinement - {element_type} {element_name} | All {max_retries} attempts failed",
+                    error=str(e),
+                    content_preview=content[:500],
+                    full_content=content
+                )
+                return None
+
+        except Exception as e:
+            logger.error(
+                f"  [LLM ERROR] Refinement - {element_type} {element_name} | Attempt {attempt}/{max_retries}",
+                error=str(e)
+            )
+            if attempt < max_retries:
+                logger.info(f"  [RETRY] Retrying refinement for {element_type} {element_name} due to error")
+                continue
+            else:
+                logger.error(f"  [ALL RETRIES FAILED] Refinement - {element_type} {element_name} | Error: {e}")
+                return None
+
+    return None
+
+
+def extract_json_from_response(content: str) -> str:
+    """
+    Robustly extract JSON from LLM response.
+
+    Handles:
+    - Markdown code blocks (```json or ```)
+    - Plain JSON with surrounding text
+    - Common prefixes like "Here is the JSON:"
+    - JSON objects anywhere in the text
+
+    Args:
+        content: Raw LLM response content
+
+    Returns:
+        Extracted JSON string
+
+    Raises:
+        ValueError: If no JSON can be extracted
+    """
+    # Strategy 1: Try markdown code blocks first
+    if "```json" in content:
+        try:
+            extracted = content.split("```json")[1].split("```")[0].strip()
+            if extracted:
+                return extracted
+        except IndexError:
+            pass
+
+    if "```" in content:
+        try:
+            extracted = content.split("```")[1].split("```")[0].strip()
+            if extracted:
+                return extracted
+        except IndexError:
+            pass
+
+    # Strategy 2: Strip common prefixes and try parsing
+    common_prefixes = [
+        "Here is the JSON:",
+        "Here's the JSON:",
+        "The JSON is:",
+        "JSON:",
+        "Output:",
+        "Result:",
+    ]
+
+    cleaned_content = content.strip()
+    for prefix in common_prefixes:
+        if cleaned_content.lower().startswith(prefix.lower()):
+            cleaned_content = cleaned_content[len(prefix):].strip()
+            break
+
+    # Strategy 3: Try to find JSON object using regex
+    # Look for { ... } pattern (handles nested braces)
+    json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+    matches = re.findall(json_pattern, cleaned_content, re.DOTALL)
+
+    if matches:
+        # Try each match, starting with the longest (likely most complete)
+        for match in sorted(matches, key=len, reverse=True):
+            try:
+                # Validate it's actually JSON
+                json.loads(match)
+                return match
+            except json.JSONDecodeError:
+                continue
+
+    # Strategy 4: If content looks like it starts with {, try using it directly
+    if cleaned_content.startswith('{'):
+        # Find the matching closing brace
+        brace_count = 0
+        for i, char in enumerate(cleaned_content):
+            if char == '{':
+                brace_count += 1
+            elif char == '}':
+                brace_count -= 1
+                if brace_count == 0:
+                    return cleaned_content[:i+1]
+
+    # Strategy 5: Return original content and let json.loads fail with a clear error
+    return content.strip()
 
 
 def detect_gaps(
@@ -262,27 +422,11 @@ def refine_missing_element(
             existing_documentation_summary=existing_summary
         )
 
-        logger.debug(f"Refining {gap.element_type}: {gap.element_name}")
-        response = llm_model.invoke(prompt)
-        content = response.content if hasattr(response, 'content') else str(response)
+        logger.info(f"  [LLM CALL] Refinement - {gap.element_type.capitalize()} {gap.element_name} | Prompt: {len(prompt)} chars")
 
-        # Extract JSON
-        if "```json" in content:
-            content = content.split("```json")[1].split("```")[0].strip()
-        elif "```" in content:
-            content = content.split("```")[1].split("```")[0].strip()
+        doc_data = call_llm_with_retry(llm_model, prompt, gap.element_type.capitalize(), gap.element_name)
 
-        # Parse JSON
-        try:
-            doc_data = json.loads(content)
-            return doc_data
-        except json.JSONDecodeError as e:
-            logger.error(
-                f"Failed to parse JSON for {gap.element_type} {gap.element_name}",
-                error=str(e),
-                content_preview=content[:200]
-            )
-            return None
+        return doc_data
 
     except Exception as e:
         logger.error(
@@ -304,11 +448,10 @@ def validation_agent_node(state: ParserLedState) -> ParserLedState:
     Returns:
         Updated state with validation_results and refined documentation
     """
+    agent_start_time = time.time()
+    llm_call_count = 0
     logger.info(
-        "Starting Validation Agent",
-        iteration=state.validation_iteration + 1,
-        max_iterations=state.config.max_validation_iterations,
-        files=len(state.documented_files)
+        f"[AGENT START] Validation Agent | Iteration: {state.validation_iteration + 1}/{state.config.max_validation_iterations} | Files: {len(state.documented_files)}"
     )
 
     if not state.documented_files:
@@ -371,7 +514,7 @@ def validation_agent_node(state: ParserLedState) -> ParserLedState:
 
         # If gaps exist and we haven't exceeded max iterations, refine
         if gaps and current_iteration < state.config.max_validation_iterations:
-            logger.info(f"Refining {len(gaps)} missing elements")
+            logger.info(f"[REFINEMENT] Starting refinement for {file_path} | Gaps: {len(gaps)}")
 
             # Read file content
             full_path = Path(state.directory_path) / file_path
@@ -379,6 +522,7 @@ def validation_agent_node(state: ParserLedState) -> ParserLedState:
                 file_content = f.read()
 
             # Refine each gap
+            refined_count = 0
             for gap in gaps:
                 doc_data = refine_missing_element(
                     gap, snapshot, file_content, file_doc, llm_model
@@ -386,6 +530,9 @@ def validation_agent_node(state: ParserLedState) -> ParserLedState:
 
                 if not doc_data:
                     continue
+
+                refined_count += 1
+                llm_call_count += 1
 
                 # Add refined documentation to file_doc
                 if gap.element_type == "class":
@@ -431,22 +578,19 @@ def validation_agent_node(state: ParserLedState) -> ParserLedState:
             validation_result.is_complete = (len(gaps_after) == 0)
 
             logger.info(
-                f"After refinement: {coverage_after:.1f}% coverage ({len(gaps_after)} gaps remaining)"
+                f"[REFINEMENT] Completed {file_path} | Coverage: {coverage:.1f}% -> {coverage_after:.1f}% | Gaps: {len(gaps)} -> {len(gaps_after)} | Refined: {refined_count}"
             )
 
         # Store validation result
         state.validation_results[file_path] = validation_result
 
     # Log summary
+    agent_duration = time.time() - agent_start_time
     complete_files = sum(1 for v in state.validation_results.values() if v.is_complete)
     avg_coverage = sum(v.coverage_percentage for v in state.validation_results.values()) / len(state.validation_results) if state.validation_results else 0
 
     logger.info(
-        "Validation Agent complete",
-        iteration=current_iteration,
-        complete_files=complete_files,
-        total_files=len(state.validation_results),
-        avg_coverage=f"{avg_coverage:.1f}%"
+        f"[AGENT END] Validation Agent | Duration: {agent_duration:.2f}s | Complete: {complete_files}/{len(state.validation_results)} | Avg Coverage: {avg_coverage:.1f}% | LLM Calls: {llm_call_count}"
     )
 
     return state

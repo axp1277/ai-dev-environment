@@ -61,6 +61,8 @@ docs_output/
 *.log
 .docgen/
 *.bak
+output/
+data/
 
 # Temporary files
 *.tmp

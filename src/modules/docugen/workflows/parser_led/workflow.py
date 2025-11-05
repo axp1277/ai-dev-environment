@@ -6,8 +6,9 @@ Complete workflow orchestration using LangGraph.
 Workflow Steps:
 1. START → Parser Agent (parse all C# files)
 2. Parser Agent → File Controller (orchestrate per-file processing)
-3. File Controller → Compiler Agent (generate final documentation)
-4. Compiler Agent → END
+3. File Controller → Consolidation Agent (deduplicate and consolidate elements)
+4. Consolidation Agent → Compiler Agent (generate final documentation)
+5. Compiler Agent → END
 
 The File Controller internally handles:
 - Documentation Agent (per file)
@@ -23,6 +24,7 @@ from loguru import logger
 from .state import ParserLedState, ParserLedConfig
 from .agents.parser_agent import parser_agent_node
 from .agents.file_controller import file_controller_node
+from .agents.consolidation_agent import consolidation_agent_node
 from .agents.compiler_agent import compiler_agent_node
 
 
@@ -44,12 +46,14 @@ def create_parser_led_workflow(config: ParserLedConfig = None, checkpointer=None
     # Add nodes
     workflow.add_node("parser", parser_agent_node)
     workflow.add_node("file_controller", file_controller_node)
+    workflow.add_node("consolidation", consolidation_agent_node)
     workflow.add_node("compiler", compiler_agent_node)
 
     # Define edges
     workflow.set_entry_point("parser")
     workflow.add_edge("parser", "file_controller")
-    workflow.add_edge("file_controller", "compiler")
+    workflow.add_edge("file_controller", "consolidation")
+    workflow.add_edge("consolidation", "compiler")
     workflow.add_edge("compiler", END)
 
     # Compile workflow with checkpointing
@@ -119,6 +123,14 @@ def run_parser_led_workflow(
                     f"✓ File Controller completed: {len(state_dict.get('documented_files', {}))} files documented "
                     f"({avg_coverage:.1f}% avg coverage)"
                 )
+            elif node_name == "consolidation":
+                consolidated_elements = state_dict.get('consolidated_elements', {})
+                if consolidated_elements:
+                    logger.info(
+                        f"✓ Consolidation completed: {len(consolidated_elements)} duplicate elements consolidated"
+                    )
+                else:
+                    logger.info("✓ Consolidation completed: No duplicates found")
             elif node_name == "compiler":
                 logger.info("✓ Compiler completed: Final documentation generated")
 

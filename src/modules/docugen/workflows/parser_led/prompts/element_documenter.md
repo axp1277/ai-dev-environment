@@ -46,7 +46,13 @@ Generate documentation for the specified element that is:
 
 ## Output Format
 
-Your response must be valid JSON matching this structure:
+**CRITICAL**: Your response must contain ONLY valid JSON. Do not include:
+- Explanatory text before or after the JSON
+- Markdown code blocks (no ``` markers)
+- Comments or additional context
+- Any text that is not part of the JSON object
+
+Return ONLY the JSON object matching this structure:
 
 ### For Methods:
 ```json
@@ -128,4 +134,4 @@ Now document the following element:
 {file_content}
 ```
 
-Provide your documentation in valid JSON format as specified above.
+**IMPORTANT**: Return ONLY the JSON object. No explanations, no markdown formatting, no additional text. Just the raw JSON.

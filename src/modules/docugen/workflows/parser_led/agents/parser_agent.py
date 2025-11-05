@@ -12,6 +12,7 @@ Responsibilities:
 - Track progress with detailed logging
 """
 
+import time
 from pathlib import Path
 from typing import List
 from loguru import logger
@@ -125,10 +126,11 @@ def parser_agent_node(state: ParserLedState) -> ParserLedState:
     Returns:
         Updated state with structure_snapshots populated
     """
+    agent_start_time = time.time()
     logger.info(
-        "Starting Parser Agent (Structure Harvest)",
-        directory=state.directory_path,
-        include_private=state.config.include_private_members
+        "[AGENT START] Parser Agent | Directory: {dir} | Include Private: {private}",
+        dir=state.directory_path,
+        private=state.config.include_private_members
     )
 
     # Step 1: Discover files
@@ -150,11 +152,8 @@ def parser_agent_node(state: ParserLedState) -> ParserLedState:
 
     for idx, file_path in enumerate(state.discovered_files, start=1):
         try:
-            logger.info(
-                f"Processing file {idx}/{total_files}",
-                file=file_path,
-                progress=f"{idx}/{total_files}"
-            )
+            file_start_time = time.time()
+            logger.info(f"[FILE] Processing {file_path} ({idx}/{total_files})")
 
             # Parse the file
             snapshot = parse_csharp_file(
@@ -179,6 +178,11 @@ def parser_agent_node(state: ParserLedState) -> ParserLedState:
                     fields=len(class_info.attributes)
                 )
 
+            file_duration = time.time() - file_start_time
+            logger.info(
+                f"[FILE] Completed {file_path} | Classes: {len(snapshot.classes)} | Duration: {file_duration:.2f}s"
+            )
+
         except Exception as e:
             # Store error but continue processing other files
             error_msg = f"Parsing error: {str(e)}"
@@ -190,16 +194,13 @@ def parser_agent_node(state: ParserLedState) -> ParserLedState:
             )
 
     # Step 3: Log summary
+    agent_duration = time.time() - agent_start_time
     successful_count = len(state.structure_snapshots)
     error_count = len(state.parsing_errors)
     total_classes = sum(len(s.classes) for s in state.structure_snapshots.values())
 
     logger.info(
-        "Parser Agent complete",
-        successful_files=successful_count,
-        failed_files=error_count,
-        total_classes=total_classes,
-        success_rate=f"{successful_count / total_files * 100:.1f}%" if total_files > 0 else "0%"
+        f"[AGENT END] Parser Agent | Duration: {agent_duration:.2f}s | Files: {successful_count}/{total_files} | Classes: {total_classes}"
     )
 
     if error_count > 0:

@@ -11,6 +11,7 @@ Responsibilities:
 - Aggregate results for final compilation
 """
 
+import time
 from loguru import logger
 from typing import Dict
 
@@ -46,7 +47,8 @@ def process_single_file(
     Returns:
         Tuple of (FileDocumentation, ValidationResult)
     """
-    logger.info(f"Processing file: {file_path}")
+    file_start_time = time.time()
+    logger.info(f"[FILE] Processing {file_path}")
 
     if file_path not in state.structure_snapshots:
         logger.warning(f"No structure snapshot for {file_path}")
@@ -96,7 +98,7 @@ def process_single_file(
 
     while gaps and iteration < max_iterations:
         iteration += 1
-        logger.info(f"Refinement iteration {iteration}/{max_iterations} for {file_path}")
+        logger.info(f"[ITERATION {iteration}/{max_iterations}] Starting refinement | Gaps: {len(gaps)}")
 
         # Refine each gap
         for gap in gaps:
@@ -144,7 +146,7 @@ def process_single_file(
         )
 
         logger.info(
-            f"After iteration {iteration}: {coverage:.1f}% coverage ({len(gaps)} gaps)"
+            f"[ITERATION {iteration}/{max_iterations}] Completed | Coverage: {coverage:.1f}% | Gaps: {len(gaps)}"
         )
 
         if not gaps:
@@ -162,11 +164,9 @@ def process_single_file(
         is_complete=(len(gaps) == 0)
     )
 
+    file_duration = time.time() - file_start_time
     logger.info(
-        f"Completed {file_path}",
-        coverage=f"{coverage:.1f}%",
-        iterations=iteration,
-        complete=validation_result.is_complete
+        f"[FILE] Completed {file_path} | Coverage: {coverage:.1f}% | Iterations: {iteration} | Duration: {file_duration:.2f}s"
     )
 
     return file_doc, validation_result
@@ -184,9 +184,9 @@ def file_controller_node(state: ParserLedState) -> ParserLedState:
     Returns:
         Updated state with documented_files and validation_results
     """
+    agent_start_time = time.time()
     logger.info(
-        "Starting File Controller",
-        total_files=len(state.structure_snapshots)
+        f"[AGENT START] File Controller | Files: {len(state.structure_snapshots)}"
     )
 
     if not state.structure_snapshots:
@@ -231,15 +231,12 @@ def file_controller_node(state: ParserLedState) -> ParserLedState:
             # Continue with other files
 
     # Calculate summary metrics
+    agent_duration = time.time() - agent_start_time
     complete_count = sum(1 for v in state.validation_results.values() if v.is_complete)
     avg_coverage = sum(v.coverage_percentage for v in state.validation_results.values()) / len(state.validation_results) if state.validation_results else 0
 
     logger.info(
-        "File Controller complete",
-        completed=completed_files,
-        total=total_files,
-        complete_files=complete_count,
-        avg_coverage=f"{avg_coverage:.1f}%"
+        f"[AGENT END] File Controller | Duration: {agent_duration:.2f}s | Files: {completed_files}/{total_files} | Complete: {complete_count} | Avg Coverage: {avg_coverage:.1f}%"
     )
 
     return state

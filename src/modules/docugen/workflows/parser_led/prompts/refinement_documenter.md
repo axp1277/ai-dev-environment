@@ -36,7 +36,13 @@ Generate documentation ONLY for the specified missing elements. Follow the same 
 
 ## Output Format
 
-Your response must be valid JSON. The structure depends on the element type:
+**CRITICAL**: Your response must contain ONLY valid JSON. Do not include:
+- Explanatory text before or after the JSON
+- Markdown code blocks (no ``` markers)
+- Comments or additional context
+- Any text that is not part of the JSON object
+
+Return ONLY the JSON object. The structure depends on the element type:
 
 ### For a Missing Class:
 ```json
@@ -103,4 +109,4 @@ The following elements have already been documented:
 
 ---
 
-Provide your documentation in valid JSON format as specified above. Document ONLY the requested element.
+**IMPORTANT**: Return ONLY the JSON object for the requested element. No explanations, no markdown formatting, no additional text. Just the raw JSON.

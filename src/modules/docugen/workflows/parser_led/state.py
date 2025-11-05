@@ -109,6 +109,26 @@ class ValidationResult(BaseModel):
         frozen = False
 
 
+class ConsolidatedElement(BaseModel):
+    """
+    Consolidated documentation for a duplicate element.
+
+    When the same element appears in multiple files (e.g., inherited/interface members),
+    this represents the LLM-consolidated definition that combines all variations.
+    """
+    element_name: str
+    element_type: str  # "method", "property", "field"
+    signature: str  # Full signature for identification
+    consolidated_description: str
+    consolidated_parameters: Optional[Dict[str, str]] = None  # For methods
+    consolidated_returns: Optional[str] = None  # For methods
+    source_files: List[str] = Field(default_factory=list)  # Files where element appears
+    original_count: int  # Number of original definitions consolidated
+
+    class Config:
+        frozen = False
+
+
 class ParserLedState(BaseModel):
     """
     State for parser-led documentation workflow.
@@ -136,6 +156,9 @@ class ParserLedState(BaseModel):
     # Validation phase (Phase 3)
     validation_results: Dict[str, ValidationResult] = Field(default_factory=dict)
     validation_iteration: int = 0
+
+    # Consolidation phase (Phase 3.5 - Post-processing)
+    consolidated_elements: Optional[Dict[str, ConsolidatedElement]] = None  # element_key: consolidated_doc
 
     # Final output (Phase 4) - To be implemented
     # final_documentation: Optional[str] = None

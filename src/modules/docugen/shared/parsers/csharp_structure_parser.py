@@ -56,12 +56,12 @@ class PropertyInfo(BaseModel):
 
 
 class ClassInfo(BaseModel):
-    """Represents a C# class with its attributes, properties, and methods."""
+    """Represents a C# class or interface with its attributes, properties, and methods."""
     name: str
     namespace: Optional[str] = None
     modifiers: List[str] = Field(default_factory=list)
     base_class: Optional[str] = None  # Single base class (C# only allows one)
-    interfaces: List[str] = Field(default_factory=list)  # Interfaces implemented
+    interfaces: List[str] = Field(default_factory=list)  # Interfaces implemented/extended
     line_number: int
     attributes: List[AttributeInfo] = Field(default_factory=list)  # Fields
     properties: List[PropertyInfo] = Field(default_factory=list)  # Properties
@@ -69,6 +69,7 @@ class ClassInfo(BaseModel):
     nested_classes: List['ClassInfo'] = Field(default_factory=list)
     is_partial: bool = False  # True if class has 'partial' modifier
     is_nested: bool = False  # True if class is nested inside another class
+    is_interface: bool = False  # True if this is an interface declaration
 
     class Config:
         """Pydantic configuration."""
@@ -150,9 +151,9 @@ class CSharpStructureParser:
         return None
     
     def _find_classes(self, node: Node, namespace: Optional[str], classes: List[ClassInfo], parent_class: Optional[ClassInfo] = None):
-        """Recursively find all class declarations in the syntax tree."""
+        """Recursively find all class and interface declarations in the syntax tree."""
         if node.type == 'class_declaration':
-            class_info = self._parse_class(node, namespace, is_nested=parent_class is not None)
+            class_info = self._parse_class(node, namespace, is_nested=parent_class is not None, is_interface=False)
             if parent_class:
                 parent_class.nested_classes.append(class_info)
             else:
@@ -163,13 +164,26 @@ class CSharpStructureParser:
             if body_node:
                 for child in body_node.children:
                     self._find_classes(child, namespace, classes, class_info)
+        elif node.type == 'interface_declaration':
+            # Parse interface as a ClassInfo with is_interface=True
+            interface_info = self._parse_class(node, namespace, is_nested=parent_class is not None, is_interface=True)
+            if parent_class:
+                parent_class.nested_classes.append(interface_info)
+            else:
+                classes.append(interface_info)
+
+            # Look for nested types in interfaces
+            body_node = self._find_child_by_field(node, 'body')
+            if body_node:
+                for child in body_node.children:
+                    self._find_classes(child, namespace, classes, interface_info)
         else:
             # Continue searching in children
             for child in node.children:
                 self._find_classes(child, namespace, classes, parent_class)
 
-    def _parse_class(self, node: Node, namespace: Optional[str], is_nested: bool = False) -> ClassInfo:
-        """Parse a class declaration node."""
+    def _parse_class(self, node: Node, namespace: Optional[str], is_nested: bool = False, is_interface: bool = False) -> ClassInfo:
+        """Parse a class or interface declaration node."""
         name_node = self._find_child_by_field(node, 'name')
         class_name = self._get_node_text(name_node) if name_node else 'Unknown'
 
@@ -180,7 +194,11 @@ class CSharpStructureParser:
         is_partial = 'partial' in modifiers
 
         # Extract base class and interfaces
-        base_class, interfaces = self._extract_base_and_interfaces(node)
+        # For interfaces, all items in base_list are parent interfaces
+        if is_interface:
+            base_class, interfaces = self._extract_interface_bases(node)
+        else:
+            base_class, interfaces = self._extract_base_and_interfaces(node)
 
         # Create class info with new fields
         class_info = ClassInfo(
@@ -191,7 +209,8 @@ class CSharpStructureParser:
             interfaces=interfaces,
             line_number=node.start_point[0] + 1,
             is_partial=is_partial,
-            is_nested=is_nested
+            is_nested=is_nested,
+            is_interface=is_interface
         )
 
         # Parse the class body
@@ -384,6 +403,29 @@ class CSharpStructureParser:
                     interfaces = base_items[1:]  # Rest are interfaces
 
         return base_class, interfaces
+
+    def _extract_interface_bases(self, node: Node) -> tuple[Optional[str], List[str]]:
+        """
+        Extract base interfaces for an interface declaration.
+
+        Interfaces can extend multiple other interfaces. All items in the base_list
+        are parent interfaces.
+
+        Returns:
+            Tuple of (None, interfaces) - base_class is always None for interfaces
+        """
+        interfaces = []
+
+        # Find base_list node by type
+        base_list_node = self._find_child_by_type(node, 'base_list')
+
+        if base_list_node:
+            # All items are parent interfaces
+            for child in base_list_node.children:
+                if child.type == 'identifier':
+                    interfaces.append(self._get_node_text(child))
+
+        return None, interfaces
     
     def _extract_parameters(self, node: Node) -> List[str]:
         """Extract method parameters."""
@@ -429,14 +471,17 @@ class CSharpStructureParser:
 
 def print_class_tree(class_info: ClassInfo, indent: int = 0):
     """
-    Pretty print a class structure as a tree.
+    Pretty print a class or interface structure as a tree.
 
     Args:
-        class_info: The class to print
+        class_info: The class/interface to print
         indent: Current indentation level
     """
     prefix = "  " * indent
     modifiers_str = " ".join(class_info.modifiers)
+
+    # Determine if it's a class or interface
+    type_label = "Interface" if class_info.is_interface else "Class"
 
     # Build inheritance string
     inheritance_parts = []
@@ -453,7 +498,7 @@ def print_class_tree(class_info: ClassInfo, indent: int = 0):
         markers.append("nested")
     marker_str = f" [{', '.join(markers)}]" if markers else ""
 
-    print(f"{prefix}Class: {modifiers_str} {class_info.name}{base_str}{marker_str} (line {class_info.line_number})")
+    print(f"{prefix}{type_label}: {modifiers_str} {class_info.name}{base_str}{marker_str} (line {class_info.line_number})")
 
     if class_info.namespace:
         print(f"{prefix}  Namespace: {class_info.namespace}")
