@@ -1,6 +1,6 @@
 [project]
 name = "ai-dev-environment"
-version = "0.2.0"
+version = "0.3.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -9,4 +9,11 @@ dependencies = [
     "loguru>=0.7.3",
     "pydantic>=2.12.3",
     "python-dotenv>=1.1.1",
+    "python-gitlab>=7.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
 ]
